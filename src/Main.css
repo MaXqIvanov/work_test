@@ -40,6 +40,15 @@
     margin-top: 16px;
     margin-bottom: 16px;
     font-size: 2rem;
+    display: flex;
+    align-items: center;
+
+}
+.feedback_add-btn{
+    margin-left: 8px;
+    border: black !important;
+    background-color: #A60DBF !important;
+    border: none !important;
 }
 
 .services-list{
@@ -96,4 +105,11 @@ width:300px ;
 .service-form{
     display: flex;
     flex-direction: column;
+}
+.form-buttons{
+    margin-left: auto;
+    margin-top: 8px;
+}
+.submit-button{
+    margin-right: 8px;
 }

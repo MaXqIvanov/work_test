@@ -9,7 +9,6 @@ import {
     Button,
     Card,
     Comment,
-    ConfigProvider,
     DatePicker,
     Form,
     Input,
@@ -21,8 +20,8 @@ import {
 import "antd/dist/antd.css";
 import Meta from "antd/es/card/Meta";
 import Modal from "antd/es/modal/Modal";
-import locale from "antd/es/date-picker/locale/ru_RU";
-import moment from "moment";
+import {PlusOutlined} from "@ant-design/icons";
+import Error from "./FailedPage/Error";
 
 function Main() {
     const { Option } = Select;
@@ -32,6 +31,7 @@ function Main() {
     let [servicesData, setServicesData] = useState([])
     let [feedbackData, setFeedbackData] = useState([])
     let [feedbackV, setFeedbackV] = useState(false)
+    let [errorModal, setErrorModal] = useState(false)
     let [selectedService, setSelectedService] = useState(null)
     let [nameHolder, setNameHolder] = useState('')
     let [phoneHolder, setPhoneHolder] = useState('')
@@ -45,7 +45,11 @@ function Main() {
         api(`portfolio/user_landing/master/?mst=${params.id}`)
             .then((response)=>{
                 setUserData(response.data[0])
-                console.log(userData)
+            })
+            .catch((e)=>{
+                if (e.response.status === 500){
+                    setErrorModal(true)
+                }
             })
         api(`portfolio/user_landing/services/?mst=${params.id}`)
             .then((response)=>{
@@ -54,7 +58,6 @@ function Main() {
         api(`portfolio/user_landing/grades/?mst=${params.id}`)
             .then((response)=>{
                 setFeedbackData(response.data)
-                console.log(feedbackData)
             })
     },[])
     useEffect(()=>{
@@ -66,7 +69,7 @@ function Main() {
                 }
             })
             .catch((err)=>{
-                console.log(err.response)
+
                 if (err.response.status === 400){
                     setTimeData([])
                     setSelectedDate(null)
@@ -75,7 +78,9 @@ function Main() {
             })
     },[selectedService,selectedDate])
     function sendRecord(){
-        console.log('finfish')
+        api.post('portfolio/user_landing/create_record/',
+            )
+
     }
 
     return (
@@ -95,6 +100,11 @@ function Main() {
 <div className={'services-list'}>
                 {servicesData.map(item => (
                             <Card
+                                key={item.id}
+                                onClick={()=>{
+                                    setSelectedService(item.id)
+                                    setFeedbackV(true)
+                                }}
                                 className={'card'}
                                 hoverable={true}
                                 cover={
@@ -116,11 +126,12 @@ function Main() {
 
 
 </div>
-                <span className={'feedback-title'}>Отзывы</span>
+                <div className={'feedback-title'}><span >Отзывы</span> <Button className={'feedback_add-btn'} type="primary" shape="circle" icon={<PlusOutlined />} /></div>
 
                 <Card className={'feedback-list'}>
                     {feedbackData.map(item => (
                     <Comment
+                        key={item.id}
                         className={'comment-item'}
                         author={<a>{item.client}</a>}
                         avatar={<Avatar src="https://joeschmoe.io/api/v1/random" alt={item.client} />}
@@ -144,15 +155,15 @@ function Main() {
                     </Comment>
                     ))}
                 </Card>
-                <Modal title="Запись" visible={feedbackV} onOk={()=>{setFeedbackV(true)}} onCancel={()=>{setFeedbackV(false)}}>
-                    <Form onSubmit={sendRecord} className={'service-form'}>
+                <Modal footer={null} onCancel={()=>{setFeedbackV(false)}} title="Запись" visible={feedbackV} >
+                    <Form  onFinish={sendRecord} className={'service-form'}>
                     <Input onChange={((e)=>{setNameHolder(e.target.value)})} required className={'form-input'} placeholder="Имя" />
                     <Input onChange={((e)=>{setPhoneHolder(e.target.value)})} required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}  />
                     <Input onChange={((e)=>{setEmailHolder(e.target.value)})} required placeholder={'Почта'} className={'form-input'} />
-                        <Select required onSelect={(e)=>{setSelectedService(e)}}
+                        <Select value={selectedService} required onSelect={(e)=>{setSelectedService(e)}}
                                 className={'form-input'} placeholder={'Услуга'}  >
                             {servicesData.map(item => (
-                                <Option  key={item.id} value={item.id}>{item.name}</Option>
+                                <Option key={item.id} value={item.id}>{item.name}</Option>
                                 ))}
                         </Select>
 
@@ -168,8 +179,19 @@ function Main() {
                         </Select>
 
                    <div> <Switch required  defaultChecked  className={'form-switch'}   /> Согласен(-а) на обработку данных *</div>
-                        <Button disabled={notWorking === true || nameHolder === '' || phoneHolder === '' || emailHolder === '' || selectedService === null || selectedDate === null || selectedTime === null} htmlType="submit">Создать</Button>
+                        <div className="form-buttons">
+                        <Button className={"submit-button"}  disabled={notWorking === true || nameHolder === '' || phoneHolder === '' || emailHolder === '' || selectedService === null || selectedDate === null || selectedTime === null} htmlType="submit">Создать</Button>
+                        <Button onClick={()=>{setFeedbackV(false)}}>Отмена</Button>
+                        </div>
                     </Form>
+                </Modal>
+
+
+
+
+
+                <Modal closable={false} footer={null}  visible={errorModal}>
+                    <Error></Error>
                 </Modal>
             </Content>
 

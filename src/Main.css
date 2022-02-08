@@ -93,3 +93,7 @@ width:300px ;
 .form-switch{
     margin-right: 8px !important;
 }
+.service-form{
+    display: flex;
+    flex-direction: column;
+}

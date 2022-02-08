@@ -4,19 +4,42 @@ import {Content} from "antd/es/layout/layout";
 import Avatar from "antd/es/avatar/avatar";
 import {useEffect, useState} from "react";
 import {useParams} from "react-router";
-import {Button, Card, Comment, Input, Rate, Switch, Tooltip} from "antd";
+import {
+    Alert,
+    Button,
+    Card,
+    Comment,
+    ConfigProvider,
+    DatePicker,
+    Form,
+    Input,
+    Rate,
+    Select,
+    Switch,
+    Tooltip
+} from "antd";
 import "antd/dist/antd.css";
 import Meta from "antd/es/card/Meta";
 import Modal from "antd/es/modal/Modal";
+import locale from "antd/es/date-picker/locale/ru_RU";
+import moment from "moment";
 
 function Main() {
+    const { Option } = Select;
     const { TextArea } = Input;
     const params = useParams();
     let [userData, setUserData] = useState([])
     let [servicesData, setServicesData] = useState([])
     let [feedbackData, setFeedbackData] = useState([])
     let [feedbackV, setFeedbackV] = useState(false)
-
+    let [selectedService, setSelectedService] = useState(null)
+    let [nameHolder, setNameHolder] = useState('')
+    let [phoneHolder, setPhoneHolder] = useState('')
+    let [emailHolder, setEmailHolder] = useState('')
+    let [selectedDate, setSelectedDate] = useState(null)
+    let [selectedTime, setSelectedTime] = useState(null)
+    let [timeData, setTimeData] = useState([])
+    let [notWorking, setNotWorking] = useState(false)
 
     useEffect(()=>{
         api(`portfolio/user_landing/master/?mst=${params.id}`)
@@ -34,6 +57,27 @@ function Main() {
                 console.log(feedbackData)
             })
     },[])
+    useEffect(()=>{
+        api(`portfolio/user_landing/free_time/?sv=${selectedService}&d=${selectedDate}`)
+            .then((response)=>{
+                if (response.status === 200) {
+                    setTimeData(response.data.times)
+                    setNotWorking(false)
+                }
+            })
+            .catch((err)=>{
+                console.log(err.response)
+                if (err.response.status === 400){
+                    setTimeData([])
+                    setSelectedDate(null)
+                    setNotWorking(true)
+                }
+            })
+    },[selectedService,selectedDate])
+    function sendRecord(){
+        console.log('finfish')
+    }
+
     return (
 
             <Content className={'main-container'}>
@@ -101,10 +145,31 @@ function Main() {
                     ))}
                 </Card>
                 <Modal title="Запись" visible={feedbackV} onOk={()=>{setFeedbackV(true)}} onCancel={()=>{setFeedbackV(false)}}>
-                    <Input className={'form-input'} placeholder="Имя" />
-                    <Input placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}  />
-                    <TextArea placeholder={"Комментарий"} className={'form-input'} rows={4}></TextArea>
-                    <Switch defaultChecked  className={'form-switch'}   /> Согласен(-а) на обработку данных *
+                    <Form onSubmit={sendRecord} className={'service-form'}>
+                    <Input onChange={((e)=>{setNameHolder(e.target.value)})} required className={'form-input'} placeholder="Имя" />
+                    <Input onChange={((e)=>{setPhoneHolder(e.target.value)})} required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}  />
+                    <Input onChange={((e)=>{setEmailHolder(e.target.value)})} required placeholder={'Почта'} className={'form-input'} />
+                        <Select required onSelect={(e)=>{setSelectedService(e)}}
+                                className={'form-input'} placeholder={'Услуга'}  >
+                            {servicesData.map(item => (
+                                <Option  key={item.id} value={item.id}>{item.name}</Option>
+                                ))}
+                        </Select>
+
+                        <DatePicker required disabled={selectedService === null} onChange={(e)=>{setSelectedDate(e._d.toLocaleDateString('ru-RU'))}}  format={'DD.MM.YYYY'} className={'form-input'} placeholder={'Дата'}/>
+                        {notWorking &&
+                            <Alert className={'form-input'} message="Мастер не работает в этот день" type="error"/>
+                        }
+                        <Select required disabled={ timeData.length === 0 } onChange={(e)=>{setSelectedTime(e)}}
+                                className={'form-input'} placeholder={'Время'}  >
+                            {timeData.map(item => (
+                                <Option key={item} value={item}>{item}</Option>
+                            ))}
+                        </Select>
+
+                   <div> <Switch required  defaultChecked  className={'form-switch'}   /> Согласен(-а) на обработку данных *</div>
+                        <Button disabled={notWorking === true || nameHolder === '' || phoneHolder === '' || emailHolder === '' || selectedService === null || selectedDate === null || selectedTime === null} htmlType="submit">Создать</Button>
+                    </Form>
                 </Modal>
             </Content>
 

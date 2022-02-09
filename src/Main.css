@@ -113,3 +113,28 @@ width:300px ;
 .submit-button{
     margin-right: 8px;
 }
+.email-select{
+color: #bfbfbf !important;
+height: 32px !important;
+    padding-left: 6px !important;
+}
+
+option[value=""][disabled] {
+    display: none;
+    /*color: #bfbfbf !important;*/
+}
+option[value=""][disabled] {
+    display: none;
+    /*color: #bfbfbf !important;*/
+}
+
+option{
+    color:black !important;
+}
+.pre-selected{
+    display: none;
+}
+.feedback-rating{
+    margin: 0 auto !important;
+    margin-bottom:8px !important;
+}

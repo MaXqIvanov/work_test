@@ -12,7 +12,7 @@ import {
     DatePicker,
     Form,
     Input,
-    Rate,
+    Rate, Result,
     Select,
     Switch,
     Tooltip
@@ -22,6 +22,7 @@ import Meta from "antd/es/card/Meta";
 import Modal from "antd/es/modal/Modal";
 import {PlusOutlined} from "@ant-design/icons";
 import Error from "./FailedPage/Error";
+const { TextArea } = Input;
 
 function Main() {
     const { Option } = Select;
@@ -31,8 +32,11 @@ function Main() {
     let [servicesData, setServicesData] = useState([])
     let [feedbackData, setFeedbackData] = useState([])
     let [feedbackV, setFeedbackV] = useState(false)
+    let [modalV, setModalV] = useState(false)
+    let [successModalV, setSuccessModalV] = useState(false)
     let [errorModal, setErrorModal] = useState(false)
-    let [selectedService, setSelectedService] = useState(null)
+    let [selectedService, setSelectedService] = useState("")
+    let [commentHolder, setCommentHolder] = useState('')
     let [nameHolder, setNameHolder] = useState('')
     let [phoneHolder, setPhoneHolder] = useState('')
     let [emailHolder, setEmailHolder] = useState('')
@@ -40,6 +44,8 @@ function Main() {
     let [selectedTime, setSelectedTime] = useState(null)
     let [timeData, setTimeData] = useState([])
     let [notWorking, setNotWorking] = useState(false)
+    let [recordCheck, setRecordCheck] = useState(true)
+
 
     useEffect(()=>{
         api(`portfolio/user_landing/master/?mst=${params.id}`)
@@ -79,8 +85,52 @@ function Main() {
     },[selectedService,selectedDate])
     function sendRecord(){
         api.post('portfolio/user_landing/create_record/',
-            )
+            {
+                name: nameHolder,
+                phone: '+7' + phoneHolder,
+                service: selectedService,
+                date: selectedDate,
+                time: selectedTime,
+                comment: commentHolder
+            })
+            .then((response)=>{
+                if (response.status === 201){
+                    setFeedbackV(false)
+                    setSuccessModalV(true)
+                    clearForms()
+                    setTimeout(() => {
+                        setSuccessModalV(false)
+                    }, 3000);
+                }
+            })
+    }
 
+    function sendFeedback(){
+        api.post('portfolio/user_landing/send_grade/',
+            {
+                name: nameHolder,
+                phone: phoneHolder,
+                comment: commentHolder
+            })
+            .then((response)=>{
+                if (response.status === 201){
+                    setFeedbackV(false)
+                    setSuccessModalV(true)
+                    setTimeout(() => {
+                        setSuccessModalV(false)
+                    }, 3000);
+                }
+            })
+    }
+
+    function clearForms(){
+        setNameHolder('')
+        setPhoneHolder('')
+        setEmailHolder('')
+        setSelectedService('')
+        setSelectedDate(null)
+        setSelectedTime('')
+        setCommentHolder('')
     }
 
     return (
@@ -126,7 +176,7 @@ function Main() {
 
 
 </div>
-                <div className={'feedback-title'}><span >Отзывы</span> <Button className={'feedback_add-btn'} type="primary" shape="circle" icon={<PlusOutlined />} /></div>
+                <div className={'feedback-title'}><span >Отзывы</span> <Button onClick={()=>{setModalV(true)}} className={'feedback_add-btn'} type="primary" shape="circle" icon={<PlusOutlined />} /></div>
 
                 <Card className={'feedback-list'}>
                     {feedbackData.map(item => (
@@ -155,38 +205,78 @@ function Main() {
                     </Comment>
                     ))}
                 </Card>
+
+
                 <Modal footer={null} onCancel={()=>{setFeedbackV(false)}} title="Запись" visible={feedbackV} >
                     <Form  onFinish={sendRecord} className={'service-form'}>
-                    <Input onChange={((e)=>{setNameHolder(e.target.value)})} required className={'form-input'} placeholder="Имя" />
-                    <Input onChange={((e)=>{setPhoneHolder(e.target.value)})} required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}  />
-                    <Input onChange={((e)=>{setEmailHolder(e.target.value)})} required placeholder={'Почта'} className={'form-input'} />
-                        <Select value={selectedService} required onSelect={(e)=>{setSelectedService(e)}}
-                                className={'form-input'} placeholder={'Услуга'}  >
+                    <Input value={nameHolder} htmlType={'text'} onChange={((e)=>{setNameHolder(e.target.value)})} required className={'form-input'} placeholder="Имя" />
+                    <Input value={phoneHolder} onChange={((e)=>{setPhoneHolder(e.target.value)})} required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}  />
+                    <Input value={emailHolder} htmlType={'email'} onChange={((e)=>{setEmailHolder(e.target.value)})} required placeholder={'Почта'} className={'form-input'} />
+                        <select value={selectedService} required onChange={(e)=>{
+                            setSelectedService(e.target.value)}}
+                                className={'ant-input form-input email-select'}  >
+                            <option selected disabled className={'pre-selected'} value={""}>Услуга</option>
                             {servicesData.map(item => (
-                                <Option key={item.id} value={item.id}>{item.name}</Option>
+                                <option key={item.id} value={item.id}>{item.name}</option>
                                 ))}
-                        </Select>
+                        </select>
 
-                        <DatePicker required disabled={selectedService === null} onChange={(e)=>{setSelectedDate(e._d.toLocaleDateString('ru-RU'))}}  format={'DD.MM.YYYY'} className={'form-input'} placeholder={'Дата'}/>
+                        <DatePicker type={'date'} required disabled={selectedService === ""} onChange={(e)=>{setSelectedDate(e._d.toLocaleDateString('ru-RU'))}}  format={'DD.MM.YYYY'} className={'form-input'} placeholder={'Дата'}/>
                         {notWorking &&
                             <Alert className={'form-input'} message="Мастер не работает в этот день" type="error"/>
                         }
-                        <Select required disabled={ timeData.length === 0 } onChange={(e)=>{setSelectedTime(e)}}
-                                className={'form-input'} placeholder={'Время'}  >
+                        <select required disabled={ timeData.length === 0 } onChange={
+                            (e)=>{
+                                setSelectedTime(e.target.value)}}
+                                className={'ant-input form-input email-select'} placeholder={'Время'}  >
+                            <option disabled selected className={'pre-selected'} value="">Время</option>
                             {timeData.map(item => (
-                                <Option key={item} value={item}>{item}</Option>
+                                <option key={item} value={item}>{item}</option>
                             ))}
-                        </Select>
+                        </select>
+                        <TextArea  onChange={((e)=>{setCommentHolder(e.target.value)})} placeholder="Комментарий" className={'form-input'} allowClear/>
 
-                   <div> <Switch required  defaultChecked  className={'form-switch'}   /> Согласен(-а) на обработку данных *</div>
+                   <div> <Switch  required checked={recordCheck} onChange={(e)=>{setRecordCheck(e)}} className={'form-switch'} /> Согласен(-а) на обработку данных *</div>
                         <div className="form-buttons">
-                        <Button className={"submit-button"}  disabled={notWorking === true || nameHolder === '' || phoneHolder === '' || emailHolder === '' || selectedService === null || selectedDate === null || selectedTime === null} htmlType="submit">Создать</Button>
+                        <Button className={"submit-button"}  disabled={recordCheck === false || notWorking === true || nameHolder === '' || phoneHolder === '' || emailHolder === '' || selectedService === null || selectedDate === null || selectedTime === null} htmlType="submit">Создать</Button>
                         <Button onClick={()=>{setFeedbackV(false)}}>Отмена</Button>
                         </div>
                     </Form>
                 </Modal>
 
 
+
+
+                <Modal footer={null} onCancel={()=>{setModalV(false)}} title="Добавить отзыв" visible={modalV} >
+                    <Form   className={'service-form'}>
+                        <Input htmlType={'text'} required className={'form-input'} placeholder="Имя" />
+                        <Input required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}  />
+                        <Input htmlType={'email'} required placeholder={'Почта'} className={'form-input'} />
+                        <Rate className={'feedback-rating '} allowHalf  />
+                        <TextArea placeholder="Комментарий" className={'form-input'} allowClear/>
+                        <div> <Switch required  defaultChecked  className={'form-switch'}   /> Согласен(-а) на обработку данных *</div>
+                        <div className="form-buttons">
+                            <Button className={"submit-button"}  disabled={notWorking === true || nameHolder === '' || phoneHolder === '' || emailHolder === '' || selectedService === null || selectedDate === null || selectedTime === null} htmlType="submit">Создать</Button>
+                            <Button onClick={()=>{setModalV(false)}}>Отмена</Button>
+                        </div>
+                    </Form>
+                </Modal>
+
+
+
+                <Modal footer={null} onCancel={()=>{setSuccessModalV(false)}} title="Успех" visible={successModalV} >
+                    <Result
+                        status="success"
+                        title="Запись"
+                        subTitle="Ваша запись успешно сформирована!"
+                        extra={[
+                            <Button onClick={()=>{ setSuccessModalV(false)}} type="primary" key="console">
+                              Закрыть
+                            </Button>,
+
+                        ]}
+                    />
+                </Modal>
 
 
 

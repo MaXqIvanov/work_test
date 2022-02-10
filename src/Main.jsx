@@ -15,7 +15,8 @@ import {
     Rate, Result,
     Select,
     Switch,
-    Tooltip
+    Tooltip,
+    message
 } from "antd";
 import "antd/dist/antd.css";
 import Meta from "antd/es/card/Meta";
@@ -45,6 +46,12 @@ function Main() {
     let [timeData, setTimeData] = useState([])
     let [notWorking, setNotWorking] = useState(false)
     let [recordCheck, setRecordCheck] = useState(true)
+    let [nameFeedHolder,setNameFeedHolder] = useState(null)
+    let [phoneFeedHolder,setPhoneFeedHolder] = useState(null)
+    let [gradeFeedHolder,setGradeFeedHolder] = useState(null)
+    let [commentFeedHolder,setCommentFeedHolder] = useState(null)
+    let [checkFeedHolder,setCheckFeedHolder] = useState(true)
+    let [successFeedModalV, setSuccessFeedModalV] = useState(false)
 
 
     useEffect(()=>{
@@ -106,19 +113,27 @@ function Main() {
     }
 
     function sendFeedback(){
+        console.log('feed')
         api.post('portfolio/user_landing/send_grade/',
             {
-                name: nameHolder,
-                phone: phoneHolder,
-                comment: commentHolder
+                name: nameFeedHolder,
+                phone: '+7' + phoneFeedHolder,
+                comment: commentFeedHolder,
+                grade: gradeFeedHolder,
+                assessed: params.id,
             })
             .then((response)=>{
-                if (response.status === 201){
-                    setFeedbackV(false)
-                    setSuccessModalV(true)
+                if (response.status === 200){
+                    setModalV(false)
+                    setSuccessFeedModalV(true)
                     setTimeout(() => {
-                        setSuccessModalV(false)
+                        setSuccessFeedModalV(false)
                     }, 3000);
+                }
+            })
+            .catch((err) => {
+                if (err.response.status === 403 ){
+                    error(err.response.data.detail)
                 }
             })
     }
@@ -131,6 +146,10 @@ function Main() {
         setSelectedDate(null)
         setSelectedTime('')
         setCommentHolder('')
+    }
+
+    const error = (text) => {
+        message.error(text);
     }
 
     return (
@@ -248,15 +267,14 @@ function Main() {
 
 
                 <Modal footer={null} onCancel={()=>{setModalV(false)}} title="Добавить отзыв" visible={modalV} >
-                    <Form   className={'service-form'}>
-                        <Input htmlType={'text'} required className={'form-input'} placeholder="Имя" />
-                        <Input required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}  />
-                        <Input htmlType={'email'} required placeholder={'Почта'} className={'form-input'} />
-                        <Rate className={'feedback-rating '} allowHalf  />
-                        <TextArea placeholder="Комментарий" className={'form-input'} allowClear/>
-                        <div> <Switch required  defaultChecked  className={'form-switch'}   /> Согласен(-а) на обработку данных *</div>
+                    <Form onFinish={sendFeedback}  className={'service-form'}>
+                        <Input onChange={(e)=>{setNameFeedHolder(e.target.value)}}  htmlType={'text'} required className={'form-input'} placeholder="Имя" />
+                        <Input onChange={(e)=>{setPhoneFeedHolder(e.target.value)}} required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}  />
+                        <Rate onChange={(e)=>{setGradeFeedHolder(e)}} required className={'feedback-rating '}   />
+                        <TextArea onChange={(e)=>{setCommentFeedHolder(e.target.value)}}  placeholder="Комментарий" className={'form-input'} allowClear/>
+                        <div> <Switch value={checkFeedHolder} onChange={(e)=>{setCheckFeedHolder(e)}} required  defaultChecked  className={'form-switch'}   /> Согласен(-а) на обработку данных *</div>
                         <div className="form-buttons">
-                            <Button className={"submit-button"}  disabled={notWorking === true || nameHolder === '' || phoneHolder === '' || emailHolder === '' || selectedService === null || selectedDate === null || selectedTime === null} htmlType="submit">Создать</Button>
+                            <Button disabled={ checkFeedHolder === false || gradeFeedHolder === null || phoneFeedHolder === null} className={"submit-button"} htmlType="submit">Создать</Button>
                             <Button onClick={()=>{setModalV(false)}}>Отмена</Button>
                         </div>
                     </Form>
@@ -278,11 +296,27 @@ function Main() {
                     />
                 </Modal>
 
+                <Modal footer={null} onCancel={()=>{setSuccessFeedModalV(false)}} title="Успех" visible={successFeedModalV} >
+                    <Result
+                        status="success"
+                        title="Отзыв"
+                        subTitle="Ваш отзыв добавлен, спасибо!"
+                        extra={[
+                            <Button onClick={()=>{ setSuccessFeedModalV(false)}} type="primary" key="console">
+                                Закрыть
+                            </Button>,
+
+                        ]}
+                    />
+                </Modal>
+
 
 
                 <Modal closable={false} footer={null}  visible={errorModal}>
                     <Error></Error>
                 </Modal>
+
+
             </Content>
 
 

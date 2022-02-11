@@ -17,6 +17,7 @@
     padding: 4px;
     border-radius: 50%;
     max-width: 250px;
+    width: 250px;
     height: 250px;
     object-fit: cover;
 }
@@ -161,7 +162,6 @@ option{
 .dates-block{
     display: flex;
     justify-content: space-between;
-    margin-bottom: 9px;
 
 }
 .dates-item{
@@ -184,9 +184,29 @@ option {
 .loading{
    visibility: hidden;
 }
-
-
-
 @media screen and (max-width: 650px) {
+    .form-input{
+        height:40px !important;
+    }
+    #phone-input{
+        height: 40px !important;
+    }
+    .form-button{
+        height: 40px !important;
+    }
+    .form-buttons button{
+        height: 40px !important;
+        width: 120px !important;
+    }
+    .form-buttons{
+        margin-top: 16px !important;
+    }
+    .ant-card-meta-title{
+        font-size: 1.2rem !important;
+    }
+    .ant-card-meta-description{
+        font-size: 1rem !important;
+    }
+
 
 }

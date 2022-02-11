@@ -183,7 +183,7 @@ function Main() {
         <Spin spinning={isLoading}>
     <Content className={isLoading ? 'main-container loading' : 'main-container'}>
             <div className={'img-block'}>
-                <img src={"http://everyservices.itpw.ru/" + userData.avatar} alt=""/>
+                <img src={userData.avatar} alt=""/>
             </div>
 
             <span className={'name-title'}>{userData.first_name} {userData.last_name}</span>
@@ -265,7 +265,7 @@ function Main() {
             <Input value={nameHolder} htmlType={'text'} onChange={((e) => {
             setNameHolder(e.target.value)
         })} required className={'form-input'} placeholder="Имя"/>
-            <Input value={phoneHolder} onChange={((e) => {
+            <Input id={'phone-input'} value={phoneHolder} onChange={((e) => {
             setPhoneHolder(e.target.value)
         })} required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}/>
             <Input value={emailHolder} htmlType={'email'} onChange={((e) => {
@@ -281,7 +281,7 @@ function Main() {
             ))}
             </select>
             <div className={'dates-block'}>
-            <select required value={dHolder} className={'dates-item email-select'} onChange={(e) => {
+            <select required value={dHolder} className={'dates-item email-select form-input'} onChange={(e) => {
             setDHolder(e.target.value)
         }} name="day">
             <option disabled selected value="">День</option>
@@ -317,7 +317,7 @@ function Main() {
             <option value="30">30</option>
             <option value="31">31</option>
             </select>
-            <select required value={mHolder} className={'dates-item email-select'} onChange={(e) => {
+            <select required value={mHolder} className={'dates-item email-select form-input'} onChange={(e) => {
             setMHolder(e.target.value)
         }} name="month">
             <option selected disabled value="">Месяц</option>
@@ -334,7 +334,7 @@ function Main() {
             <option value="11">Ноябрь</option>
             <option value="12">Декарь</option>
             </select>
-            <select required value={yHolder} className={'dates-item'} onChange={(e) => {
+            <select required value={yHolder} className={'dates-item form-input'} onChange={(e) => {
             setYHolder(e.target.value)
         }} name="year">
             <option value="2038">2038</option>
@@ -396,7 +396,7 @@ function Main() {
             <Input onChange={(e) => {
             setNameFeedHolder(e.target.value)
         }} htmlType={'text'} required className={'form-input'} placeholder="Имя"/>
-            <Input onChange={(e) => {
+            <Input  id={'phone-input'} onChange={(e) => {
             setPhoneFeedHolder(e.target.value)
         }} required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}/>
             <Rate onChange={(e) => {
@@ -410,10 +410,10 @@ function Main() {
         }} required defaultChecked className={'form-switch'}/> Согласен(-а) на обработку данных *
             </div>
             <div className="form-buttons">
-            <Button className={"submit-button"} onClick={() => {
+            <Button id={'cancel-button'} className={"submit-button form-button cancel-button"} onClick={() => {
             setModalV(false)
         }}>Отмена</Button>
-            <Button disabled={checkFeedHolder === false || gradeFeedHolder === null || phoneFeedHolder === null}
+            <Button className={"form-button"} disabled={checkFeedHolder === false || gradeFeedHolder === null || phoneFeedHolder === null}
             htmlType="submit">Создать</Button>
 
             </div>

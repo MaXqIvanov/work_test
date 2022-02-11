@@ -24,6 +24,7 @@ import Modal from "antd/es/modal/Modal";
 import {PlusOutlined} from "@ant-design/icons";
 import Error from "./FailedPage/Error";
 import {YearSelect, MonthSelect, DaySelect} from 'ru-react-select';
+import moment from "moment";
 const { TextArea } = Input;
 
 function Main() {
@@ -53,7 +54,7 @@ function Main() {
     let [commentFeedHolder,setCommentFeedHolder] = useState(null)
     let [checkFeedHolder,setCheckFeedHolder] = useState(true)
     let [successFeedModalV, setSuccessFeedModalV] = useState(false)
-    let [yHolder,setYHolder] = useState('')
+    let [yHolder,setYHolder] = useState(moment().year())
     let [mHolder,setMHolder] = useState("01")
     let [dHolder,setDHolder] = useState('')
 
@@ -78,11 +79,12 @@ function Main() {
             })
     },[])
     useEffect(()=>{
-        api(`portfolio/user_landing/free_time/?sv=${selectedService}&d=${selectedDate}`)
+        api(`portfolio/user_landing/free_time/?sv=${selectedService}&d=${dHolder + '.' + mHolder + '.' + yHolder}`)
             .then((response)=>{
                 if (response.status === 200) {
                     setTimeData(response.data.times)
                     setNotWorking(false)
+                    setSelectedDate(dHolder + '.' + mHolder + '.' + yHolder)
                 }
             })
             .catch((err)=>{
@@ -93,7 +95,7 @@ function Main() {
                     setNotWorking(true)
                 }
             })
-    },[selectedService,selectedDate])
+    },[selectedService,mHolder,dHolder,yHolder])
     function sendRecord(){
         api.post('portfolio/user_landing/create_record/',
             {
@@ -112,6 +114,12 @@ function Main() {
                     setTimeout(() => {
                         setSuccessModalV(false)
                     }, 3000);
+                }
+            })
+            .catch((err)=>{
+                if (err.response.status === 400) {
+                    console.log(err.response)
+                    error(err.response.data.detail)
                 }
             })
     }
@@ -248,16 +256,77 @@ function Main() {
                                 ))}
                         </select>
                         <div className={'dates-block'}>
-                        <DaySelect className={'dates-item'} onChange={(e)=>{setDHolder(e)}} placeholder={'День'} month={mHolder} value={dHolder}  />
-                        <MonthSelect className={'dates-item'}  onChange={(e)=>{setMHolder(e)}} placeholder={'Месяц'} value={mHolder}  />
-                        <YearSelect className={'dates-item'} value={yHolder} onChange={(e)=>{setYHolder(e)}} placeholder={'Год'}   />
+                            <select value={dHolder} className={'dates-item'} onChange={(e)=>{setDHolder(e.target.value)}}  name="day">
+                                <option value="01">1</option>
+                                <option value="02">2</option>
+                                <option value="03">3</option>
+                                <option value="04">4</option>
+                                <option value="05">5</option>
+                                <option value="06">6</option>
+                                <option value="07">7</option>
+                                <option value="08">8</option>
+                                <option value="09">9</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                                <option value="20">20</option>
+                                <option value="21">21</option>
+                                <option value="22">22</option>
+                                <option value="23">23</option>
+                                <option value="24">24</option>
+                                <option value="25">25</option>
+                                <option value="26">26</option>
+                                <option value="27">27</option>
+                                <option value="28">28</option>
+                                <option value="29">29</option>
+                                <option value="30">30</option>
+                                <option value="31">31</option>
+                            </select>
+                            <select value={mHolder} className={'dates-item'} onChange={(e)=>{setMHolder(e.target.value)}} name="month">
+                                <option value="01">Январь</option>
+                                <option value="02">Февраль</option>
+                                <option value="03">Март</option>
+                                <option value="04">Апрель</option>
+                                <option value="05">Май</option>
+                                <option value="06">Июнь</option>
+                                <option value="07">Июль</option>
+                                <option value="08">Август</option>
+                                <option value="09">Сентябрь</option>
+                                <option value="10">Октябрь</option>
+                                <option value="11">Ноябрь</option>
+                                <option value="12">Декарь</option>
+                            </select>
+                            <select value={yHolder} className={'dates-item'} onChange={(e)=>{setYHolder(e.target.value)}} name="year">
+                                <option value="2038">2038</option>
+                                <option value="2037">2037</option>
+                                <option value="2036">2036</option>
+                                <option value="2035">2035</option>
+                                <option value="2034">2034</option>
+                                <option value="2033">2033</option>
+                                <option value="2032">2032</option>
+                                <option value="2031">2031</option>
+                                <option value="2030">2030</option>
+                                <option value="2029">2029</option>
+                                <option value="2028">2028</option>
+                                <option value="2027">2027</option>
+                                <option value="2026">2026</option>
+                                <option value="2025">2025</option>
+                                <option value="2024">2024</option>
+                                <option value="2023">2023</option>
+                                <option value="2022">2022</option>
+                            </select>
                         </div>
-                        <input type={'date'} required disabled={selectedService === ""} onChange={
-                            (e)=>{
-                                setSelectedDate(e.target.value)}}  format={'DD.MM.YYYY'} className={'email-select form-input ant-input datepicker-safari'} placeholder={'Date'}/>
                         {notWorking &&
                             <Alert className={'form-input'} message="Мастер не работает в этот день" type="error"/>
                         }
+                        {timeData.length > 0 &&
                         <div className={'time-block'}>
                             {timeData.map(item => (
                                 <div onClick={()=>{
@@ -265,8 +334,8 @@ function Main() {
                                 }}  className={'time-item' + (selectedTime === item ? ' time-item__selected' : '')} key={item} value={item}>{item}</div>
                             ))}
                         </div>
+                        }
                         <TextArea  onChange={((e)=>{setCommentHolder(e.target.value)})} placeholder="Комментарий" className={'form-input'} allowClear/>
-
                    <div> <Switch  required checked={recordCheck} onChange={(e)=>{setRecordCheck(e)}} className={'form-switch'} /> Согласен(-а) на обработку данных *</div>
                         <div className="form-buttons">
                         <Button className={"submit-button"}  disabled={recordCheck === false || notWorking === true || nameHolder === '' || phoneHolder === '' || emailHolder === '' || selectedService === null || selectedDate === null || selectedTime === null} htmlType="submit">Создать</Button>

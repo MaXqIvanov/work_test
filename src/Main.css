@@ -86,6 +86,7 @@ width:300px ;
     width: 92%;
     height:355px;
     overflow-y: auto;
+    margin-bottom: 48px !important;
 }
 .comment-item{
     display: flex;
@@ -137,4 +138,42 @@ option{
 .feedback-rating{
     margin: 0 auto !important;
     margin-bottom:8px !important;
+}
+
+.time-block{
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 100%;
+    gap: 4px;
+    margin-bottom: 8px;
+
+}
+.time-item{
+    padding:4px 9px 4px 9px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.time-item__selected{
+    border: 1px solid #46b6fc !important;
+    color: #46b6fc;
+}
+.dates-block{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 9px;
+
+}
+.dates-item{
+    width: 30%;
+    height: 32px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    color: #bfbfbf !important;
+}
+
+
+
+@media screen and (max-width: 650px) {
+
 }

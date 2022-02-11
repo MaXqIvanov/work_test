@@ -23,6 +23,7 @@ import Meta from "antd/es/card/Meta";
 import Modal from "antd/es/modal/Modal";
 import {PlusOutlined} from "@ant-design/icons";
 import Error from "./FailedPage/Error";
+import {YearSelect, MonthSelect, DaySelect} from 'ru-react-select';
 const { TextArea } = Input;
 
 function Main() {
@@ -52,6 +53,9 @@ function Main() {
     let [commentFeedHolder,setCommentFeedHolder] = useState(null)
     let [checkFeedHolder,setCheckFeedHolder] = useState(true)
     let [successFeedModalV, setSuccessFeedModalV] = useState(false)
+    let [yHolder,setYHolder] = useState('')
+    let [mHolder,setMHolder] = useState("01")
+    let [dHolder,setDHolder] = useState('')
 
 
     useEffect(()=>{
@@ -151,6 +155,10 @@ function Main() {
     const error = (text) => {
         message.error(text);
     }
+    useEffect(()=>{
+        setSelectedTime(selectedTime)
+        console.log(selectedTime)
+    }, [selectedTime])
 
     return (
 
@@ -226,7 +234,7 @@ function Main() {
                 </Card>
 
 
-                <Modal footer={null} onCancel={()=>{setFeedbackV(false)}} title="Запись" visible={feedbackV} >
+                <Modal className={'modal-record'} footer={null} onCancel={()=>{setFeedbackV(false)}} title="Запись" visible={feedbackV} >
                     <Form  onFinish={sendRecord} className={'service-form'}>
                     <Input value={nameHolder} htmlType={'text'} onChange={((e)=>{setNameHolder(e.target.value)})} required className={'form-input'} placeholder="Имя" />
                     <Input value={phoneHolder} onChange={((e)=>{setPhoneHolder(e.target.value)})} required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}  />
@@ -239,20 +247,24 @@ function Main() {
                                 <option key={item.id} value={item.id}>{item.name}</option>
                                 ))}
                         </select>
-
-                        <DatePicker type={'date'} required disabled={selectedService === ""} onChange={(e)=>{setSelectedDate(e._d.toLocaleDateString('ru-RU'))}}  format={'DD.MM.YYYY'} className={'form-input'} placeholder={'Дата'}/>
+                        <div className={'dates-block'}>
+                        <DaySelect className={'dates-item'} onChange={(e)=>{setDHolder(e)}} placeholder={'День'} month={mHolder} value={dHolder}  />
+                        <MonthSelect className={'dates-item'}  onChange={(e)=>{setMHolder(e)}} placeholder={'Месяц'} value={mHolder}  />
+                        <YearSelect className={'dates-item'} value={yHolder} onChange={(e)=>{setYHolder(e)}} placeholder={'Год'}   />
+                        </div>
+                        <input type={'date'} required disabled={selectedService === ""} onChange={
+                            (e)=>{
+                                setSelectedDate(e.target.value)}}  format={'DD.MM.YYYY'} className={'email-select form-input ant-input datepicker-safari'} placeholder={'Date'}/>
                         {notWorking &&
                             <Alert className={'form-input'} message="Мастер не работает в этот день" type="error"/>
                         }
-                        <select required disabled={ timeData.length === 0 } onChange={
-                            (e)=>{
-                                setSelectedTime(e.target.value)}}
-                                className={'ant-input form-input email-select'} placeholder={'Время'}  >
-                            <option disabled selected className={'pre-selected'} value="">Время</option>
+                        <div className={'time-block'}>
                             {timeData.map(item => (
-                                <option key={item} value={item}>{item}</option>
+                                <div onClick={()=>{
+                                    setSelectedTime(item)
+                                }}  className={'time-item' + (selectedTime === item ? ' time-item__selected' : '')} key={item} value={item}>{item}</div>
                             ))}
-                        </select>
+                        </div>
                         <TextArea  onChange={((e)=>{setCommentHolder(e.target.value)})} placeholder="Комментарий" className={'form-input'} allowClear/>
 
                    <div> <Switch  required checked={recordCheck} onChange={(e)=>{setRecordCheck(e)}} className={'form-switch'} /> Согласен(-а) на обработку данных *</div>

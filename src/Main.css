@@ -181,6 +181,9 @@ option[value=""][disabled] {
 option {
     color: black !important;
 }
+.loading{
+   visibility: hidden;
+}
 
 
 

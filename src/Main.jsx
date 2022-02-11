@@ -55,7 +55,7 @@ function Main() {
     let [checkFeedHolder,setCheckFeedHolder] = useState(true)
     let [successFeedModalV, setSuccessFeedModalV] = useState(false)
     let [yHolder,setYHolder] = useState(moment().year())
-    let [mHolder,setMHolder] = useState("01")
+    let [mHolder,setMHolder] = useState("")
     let [dHolder,setDHolder] = useState('')
 
 
@@ -256,7 +256,8 @@ function Main() {
                                 ))}
                         </select>
                         <div className={'dates-block'}>
-                            <select value={dHolder} className={'dates-item'} onChange={(e)=>{setDHolder(e.target.value)}}  name="day">
+                            <select required value={dHolder} className={'dates-item email-select'} onChange={(e)=>{setDHolder(e.target.value)}}  name="day">
+                                <option disabled selected value="">День</option>
                                 <option value="01">1</option>
                                 <option value="02">2</option>
                                 <option value="03">3</option>
@@ -289,7 +290,8 @@ function Main() {
                                 <option value="30">30</option>
                                 <option value="31">31</option>
                             </select>
-                            <select value={mHolder} className={'dates-item'} onChange={(e)=>{setMHolder(e.target.value)}} name="month">
+                            <select required value={mHolder} className={'dates-item email-select'} onChange={(e)=>{setMHolder(e.target.value)}} name="month">
+                                <option selected disabled value="">Месяц</option>
                                 <option value="01">Январь</option>
                                 <option value="02">Февраль</option>
                                 <option value="03">Март</option>
@@ -303,7 +305,7 @@ function Main() {
                                 <option value="11">Ноябрь</option>
                                 <option value="12">Декарь</option>
                             </select>
-                            <select value={yHolder} className={'dates-item'} onChange={(e)=>{setYHolder(e.target.value)}} name="year">
+                            <select required value={yHolder} className={'dates-item'} onChange={(e)=>{setYHolder(e.target.value)}} name="year">
                                 <option value="2038">2038</option>
                                 <option value="2037">2037</option>
                                 <option value="2036">2036</option>
@@ -338,8 +340,9 @@ function Main() {
                         <TextArea  onChange={((e)=>{setCommentHolder(e.target.value)})} placeholder="Комментарий" className={'form-input'} allowClear/>
                    <div> <Switch  required checked={recordCheck} onChange={(e)=>{setRecordCheck(e)}} className={'form-switch'} /> Согласен(-а) на обработку данных *</div>
                         <div className="form-buttons">
-                        <Button className={"submit-button"}  disabled={recordCheck === false || notWorking === true || nameHolder === '' || phoneHolder === '' || emailHolder === '' || selectedService === null || selectedDate === null || selectedTime === null} htmlType="submit">Создать</Button>
-                        <Button onClick={()=>{setFeedbackV(false)}}>Отмена</Button>
+                            <Button className={"submit-button"} onClick={()=>{setFeedbackV(false)}}>Отмена</Button>
+                        <Button   disabled={recordCheck === false || notWorking === true || nameHolder === '' || phoneHolder === '' || emailHolder === '' || selectedService === null || selectedDate === null || selectedTime === null} htmlType="submit">Создать</Button>
+
                         </div>
                     </Form>
                 </Modal>
@@ -355,8 +358,9 @@ function Main() {
                         <TextArea onChange={(e)=>{setCommentFeedHolder(e.target.value)}}  placeholder="Комментарий" className={'form-input'} allowClear/>
                         <div> <Switch value={checkFeedHolder} onChange={(e)=>{setCheckFeedHolder(e)}} required  defaultChecked  className={'form-switch'}   /> Согласен(-а) на обработку данных *</div>
                         <div className="form-buttons">
-                            <Button disabled={ checkFeedHolder === false || gradeFeedHolder === null || phoneFeedHolder === null} className={"submit-button"} htmlType="submit">Создать</Button>
-                            <Button onClick={()=>{setModalV(false)}}>Отмена</Button>
+                            <Button className={"submit-button"} onClick={()=>{setModalV(false)}}>Отмена</Button>
+                            <Button disabled={ checkFeedHolder === false || gradeFeedHolder === null || phoneFeedHolder === null}  htmlType="submit">Создать</Button>
+
                         </div>
                     </Form>
                 </Modal>

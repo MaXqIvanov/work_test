@@ -53,7 +53,7 @@ function Main() {
     let [nameFeedHolder,setNameFeedHolder] = useState(null)
     let [phoneFeedHolder,setPhoneFeedHolder] = useState(null)
     let [gradeFeedHolder,setGradeFeedHolder] = useState(null)
-    let [commentFeedHolder,setCommentFeedHolder] = useState(null)
+    let [commentFeedHolder,setCommentFeedHolder] = useState('')
     let [checkFeedHolder,setCheckFeedHolder] = useState(true)
     let [successFeedModalV, setSuccessFeedModalV] = useState(false)
     let [yHolder,setYHolder] = useState(moment().year())
@@ -270,7 +270,7 @@ function Main() {
         })} required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}/>
             <Input value={emailHolder} htmlType={'email'} onChange={((e) => {
             setEmailHolder(e.target.value)
-        })} required placeholder={'Почта'} className={'form-input'}/>
+        })}  placeholder={'Почта'} className={'form-input'}/>
             <select value={selectedService} required onChange={(e) => {
             setSelectedService(e.target.value)
         }}

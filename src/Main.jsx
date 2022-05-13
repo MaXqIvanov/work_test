@@ -41,7 +41,7 @@ function Main() {
     let [successModalV, setSuccessModalV] = useState(false)
     let [errorModal, setErrorModal] = useState(false)
     let [selectedService, setSelectedService] = useState("")
-    let [commentHolder, setCommentHolder] = useState('')
+    let [commentHolder, setCommentHolder] = useState(null)
     let [nameHolder, setNameHolder] = useState('')
     let [phoneHolder, setPhoneHolder] = useState('')
     let [emailHolder, setEmailHolder] = useState('')

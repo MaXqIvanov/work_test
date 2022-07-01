@@ -55,6 +55,7 @@ function Main() {
     let [selectedTime, setSelectedTime] = useState(null)
     let [timeData, setTimeData] = useState([])
     let [notWorking, setNotWorking] = useState(false)
+    let [notSetService, setNotSetService] = useState(false);
     let [recordCheck, setRecordCheck] = useState(true)
     let [nameFeedHolder,setNameFeedHolder] = useState(null)
     let [phoneFeedHolder,setPhoneFeedHolder] = useState(null)
@@ -68,7 +69,7 @@ function Main() {
     let [isLoading,setIsLoading] = useState(false)
 
     const loadData = async ()=>{
-        //setIsLoading(true)
+        setIsLoading(true)
         await api(`portfolio/user_landing/master/?mst=${params.id}`)
        .then((response)=>{
            console.log(response);
@@ -76,7 +77,7 @@ function Main() {
            setIsLoading(false)
        })
        .catch((e)=>{
-           if (e.response.status === 500){
+           if (e.response.status === 500 || e.response.status === 403){
                setErrorModal(true)
            }
         })
@@ -88,14 +89,21 @@ function Main() {
             .then((response)=>{
                 setFeedbackData(response.data)
             })
-        //setIsLoading(false)
+        setIsLoading(false)
+        // для админки магазина everyserivce 
+        // акции
+        // товары 
+        // заказы
+        // для работы на дому 
+        // могут также указывать свои услуги и другие лица - тату и тд...
     }
 
     useEffect(()=>{
        loadData()
     },[])
     useEffect(()=>{
-        api(`portfolio/user_landing/free_time/?sv=${selectedService}&d=${dHolder + '.' + mHolder + '.' + yHolder}`)
+        if(mHolder !== '' && dHolder !== ''){
+            api(`portfolio/user_landing/free_time/?sv=${selectedService}&d=${dHolder + '.' + mHolder + '.' + yHolder}`)
             .then((response)=>{
                 if (response.status === 200) {
                     setTimeData(response.data.times)
@@ -110,7 +118,14 @@ function Main() {
                     setSelectedDate(null)
                     setNotWorking(true)
                 }
+                if (err.response.status === 500){
+                    setNotSetService(true)
+                }
+                else {
+                    setNotSetService(false)
+                }
             })
+        }
     },[selectedService,mHolder,dHolder,yHolder])
     function sendRecord(){
         api.post('portfolio/user_landing/create_record/',
@@ -363,6 +378,9 @@ function Main() {
             </div>
         {notWorking &&
             <Alert className={'form-input'} message="Мастер не работает в этот день" type="error"/>
+        }
+        {notSetService && 
+            <Alert className={'form-input'} message="Пожалуйста, выберите услугу" type="error"/>
         }
         {timeData.length > 0 &&
             <div className={'time-block'}>

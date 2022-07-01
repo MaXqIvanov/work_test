@@ -1,15 +1,19 @@
-import './App.css';
+import './App.scss';
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
-import Main from "./Main";
+import Main from "./view/Main";
+import { Provider } from 'react-redux';
+import { store } from './store/store';
 
 function App() {
   return (
     <div className="App">
-        <Router>
-            <Routes>
-                <Route exact path={'/portfolio/:id'} element={<Main />} />
-            </Routes>
-        </Router>
+       <Provider store={store}>
+          <Router>
+              <Routes>
+                  <Route exact path={'/portfolio/:id'} element={<Main />} />
+              </Routes>
+          </Router>
+        </Provider>  
     </div>
   );
 }

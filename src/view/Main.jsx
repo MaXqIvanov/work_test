@@ -282,13 +282,13 @@ function Main() {
             setFeedbackV(false)
         }} title="Запись" visible={feedbackV}>
             <Form onFinish={sendRecord} className={'service-form'}>
-            <Input value={nameHolder} htmlType={'text'} onChange={((e) => {
+            <Input value={nameHolder} htmltype={'text'} onChange={((e) => {
             setNameHolder(e.target.value)
         })} required className={'form-input'} placeholder="Имя"/>
             <Input id={'phone-input'} value={phoneHolder} onChange={((e) => {
             setPhoneHolder(e.target.value)
         })} required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}/>
-            <Input value={emailHolder} htmlType={'email'} onChange={((e) => {
+            <Input value={emailHolder} htmltype={'email'} onChange={((e) => {
             setEmailHolder(e.target.value)
         })}  placeholder={'Почта'} className={'form-input'}/>
             <select value={selectedService} required onChange={(e) => {
@@ -405,7 +405,7 @@ function Main() {
         }}>Отмена</Button>
             <Button
             disabled={recordCheck === false || notWorking === true || nameHolder === '' || phoneHolder === '' || emailHolder === '' || selectedService === null || selectedDate === null || selectedTime === null}
-            htmlType="submit">Создать</Button>
+            htmltype="submit">Создать</Button>
 
             </div>
             </Form>
@@ -418,7 +418,7 @@ function Main() {
             <Form onFinish={sendFeedback} className={'service-form'}>
             <Input onChange={(e) => {
             setNameFeedHolder(e.target.value)
-        }} htmlType={'text'} required className={'form-input'} placeholder="Имя"/>
+        }} htmltype={'text'} required className={'form-input'} placeholder="Имя"/>
             <Input  id={'phone-input'} onChange={(e) => {
             setPhoneFeedHolder(e.target.value)
         }} required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}/>
@@ -437,7 +437,7 @@ function Main() {
             setModalV(false)
         }}>Отмена</Button>
             <Button className={"form-button"} disabled={checkFeedHolder === false || gradeFeedHolder === null || phoneFeedHolder === null}
-            htmlType="submit">Создать</Button>
+            htmltype="submit">Создать</Button>
 
             </div>
             </Form>

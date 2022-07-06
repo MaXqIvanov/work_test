@@ -31,6 +31,8 @@ import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../store/mainSlice";
 import { useLocation } from 'react-router-dom';
+import image from '../assets/image_not_found.svg'
+
 const { TextArea } = Input;
 
 function Main() {
@@ -58,6 +60,7 @@ function Main() {
     let [timeData, setTimeData] = useState([])
     let [notWorking, setNotWorking] = useState(false)
     let [notSetService, setNotSetService] = useState(false);
+    let [notSetComment, setNotSetComment] = useState(false);
     let [recordCheck, setRecordCheck] = useState(true)
     let [nameFeedHolder,setNameFeedHolder] = useState(null)
     let [phoneFeedHolder,setPhoneFeedHolder] = useState(null)
@@ -70,7 +73,14 @@ function Main() {
     let [dHolder,setDHolder] = useState('')
     let [isLoading,setIsLoading] = useState(false)
 
+    const checkImagePromise = ( url ) => new Promise( (resolve, reject ) => {
+        let img = new Image();
+            img.addEventListener('load', resolve );
+            img.addEventListener('error', reject );
+            img.src = url;
+    });
 
+    
     const loadData = async ()=>{
         let paramsNew = searchParams.get('id')
         if(paramsNew){
@@ -93,6 +103,19 @@ function Main() {
         })
         await api(`portfolio/user_landing/services/?mst=${searchParams.get('id')}`)
             .then((response)=>{
+                console.log(response);
+                let images = document.querySelectorAll('img');
+                images.forEach( img => {
+                    console.log(img);
+                    checkImagePromise( img.src )
+                        .then( res => {
+                            // С картинкой все ок - ничего не делаем
+                        })
+                        .catch( error => {
+                            // С картинкой ошибка - ставим заглушку
+                            img.src = image;
+                        });
+                });
                 setServicesData(response.data)
             })
         await api(`portfolio/user_landing/grades/?mst=${searchParams.get('id')}`)
@@ -205,7 +228,7 @@ function Main() {
     }, [selectedTime])
 
     return (
-        <Spin spinning={isLoading}>
+        <Spin  size="large" spinning={isLoading}>
     <Content className={isLoading ? 'main-container loading' : 'main-container'}>
             <div className={'img-block'}>
                 <img src={userData.avatar} alt=""/>
@@ -385,7 +408,7 @@ function Main() {
             <Alert className={'form-input'} message="Мастер не работает в этот день" type="error"/>
         }
         {notSetService && 
-            <Alert className={'form-input'} message="Пожалуйста, выберите услугу" type="error"/>
+            <Alert className={'form-input'} type="error" message="Пожалуйста, выберите услугу" />
         }
         {timeData.length > 0 &&
             <div className={'time-block'}>
@@ -459,7 +482,7 @@ function Main() {
             extra={[
             <Button onClick={() => {
             setSuccessModalV(false)
-        }} type="primary" key="console">
+            }} type="primary" key="console">
             Закрыть
             </Button>,
 

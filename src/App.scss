@@ -4,7 +4,9 @@
   box-sizing: border-box;
   font-family: 'Roboto', sans-serif;
 }
-
+body{
+  position: relative;
+}
 .App {
   width: 90%;
   max-width: 1440px;
@@ -15,4 +17,16 @@
     min-width: 375px;
     height: fit-content;
   }
+}
+*::-webkit-scrollbar {
+  width: 6px; /* ширина scrollbar */
+}
+*::-webkit-scrollbar-track {
+  background: rgb(255, 255, 255); /* цвет дорожки */
+  border-radius: 25px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: #84d1fd; /* цвет плашки */
+  border-radius: 20px; /* закругления плашки */
+  border: 3px solid #84d1fd; /* padding вокруг плашки */
 }

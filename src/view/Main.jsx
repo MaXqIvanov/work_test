@@ -31,7 +31,7 @@ import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../store/mainSlice";
 import { useLocation } from 'react-router-dom';
-import image from '../assets/image_not_found.svg'
+import image from '../media/image_not_found.svg'
 
 const { TextArea } = Input;
 

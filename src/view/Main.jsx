@@ -3,6 +3,7 @@ import {Content} from "antd/es/layout/layout";
 import Avatar from "antd/es/avatar/avatar";
 import {useEffect, useState} from "react";
 import {useParams} from "react-router";
+import { useSearchParams } from "react-router-dom";
 import {
     Alert,
     Button,
@@ -29,13 +30,14 @@ import {YearSelect, MonthSelect, DaySelect} from 'ru-react-select';
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../store/mainSlice";
+import { useLocation } from 'react-router-dom';
 const { TextArea } = Input;
 
 function Main() {
     //const {user} = useSelector((state)=> state.main)   
     const dispatch = useDispatch(); 
     //dispatch(addUser(params))
-
+    const [searchParams, setSearchParams] = useSearchParams();
     const { Option } = Select;
     const { TextArea } = Input;
     const params = useParams();
@@ -68,9 +70,17 @@ function Main() {
     let [dHolder,setDHolder] = useState('')
     let [isLoading,setIsLoading] = useState(false)
 
+
     const loadData = async ()=>{
+        let paramsNew = searchParams.get('id')
+        if(paramsNew){
+
+        }
+        else{
+            setErrorModal(true)
+        }
         setIsLoading(true)
-        await api(`portfolio/user_landing/master/?mst=${params.id}`)
+        await api(`portfolio/user_landing/master/?mst=${searchParams.get('id')}`)
        .then((response)=>{
            console.log(response);
            setUserData(response.data[0])
@@ -81,28 +91,21 @@ function Main() {
                setErrorModal(true)
            }
         })
-        await api(`portfolio/user_landing/services/?mst=${params.id}`)
+        await api(`portfolio/user_landing/services/?mst=${searchParams.get('id')}`)
             .then((response)=>{
                 setServicesData(response.data)
             })
-        await api(`portfolio/user_landing/grades/?mst=${params.id}`)
+        await api(`portfolio/user_landing/grades/?mst=${searchParams.get('id')}`)
             .then((response)=>{
                 setFeedbackData(response.data)
             })
         setIsLoading(false)
-        // для админки магазина everyserivce 
-        // акции
-        // товары 
-        // заказы
-        // для работы на дому 
-        // могут также указывать свои услуги и другие лица - тату и тд...
     }
 
     useEffect(()=>{
        loadData()
     },[])
     useEffect(()=>{
-        // невалидная дата - ошибка
         if(mHolder !== '' && dHolder !== ''){
             api(`portfolio/user_landing/free_time/?sv=${selectedService}&d=${dHolder + '.' + mHolder + '.' + yHolder}`)
             .then((response)=>{
@@ -110,6 +113,7 @@ function Main() {
                     setTimeData(response.data.times)
                     setNotWorking(false)
                     setSelectedDate(dHolder + '.' + mHolder + '.' + yHolder)
+                    setNotSetService(false)
                 }
             })
             .catch((err)=>{
@@ -164,7 +168,7 @@ function Main() {
                 phone: '+7' + phoneFeedHolder,
                 comment: commentFeedHolder,
                 grade: gradeFeedHolder,
-                assessed: params.id,
+                assessed: searchParams.get('id').id,
             })
             .then((response)=>{
                 if (response.status === 200){

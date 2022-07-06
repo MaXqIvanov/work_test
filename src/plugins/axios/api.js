@@ -5,5 +5,3 @@ export default axios.create({
     baseURL : "https://everyservices.itpw.ru/",
 });
 
-
-// смысл приложения:

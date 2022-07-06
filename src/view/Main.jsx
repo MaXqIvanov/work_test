@@ -104,6 +104,7 @@ function Main() {
         await api(`portfolio/user_landing/services/?mst=${searchParams.get('id')}`)
             .then((response)=>{
                 console.log(response);
+                setServicesData(response.data)
                 let images = document.querySelectorAll('img');
                 images.forEach( img => {
                     console.log(img);
@@ -116,7 +117,6 @@ function Main() {
                             img.src = image;
                         });
                 });
-                setServicesData(response.data)
             })
         await api(`portfolio/user_landing/grades/?mst=${searchParams.get('id')}`)
             .then((response)=>{

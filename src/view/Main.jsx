@@ -29,8 +29,7 @@ import Error from "../components/FailedPage/Error";
 import {YearSelect, MonthSelect, DaySelect} from 'ru-react-select';
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser } from "../store/mainSlice";
-import { useLocation } from 'react-router-dom';
+import {getMastersShedule} from '../store/mainSlice';
 import image from '../media/image_not_found.svg'
 
 const { TextArea } = Input;
@@ -54,7 +53,6 @@ function Main() {
     let [commentHolder, setCommentHolder] = useState(null)
     let [nameHolder, setNameHolder] = useState('')
     let [phoneHolder, setPhoneHolder] = useState('')
-    let [emailHolder, setEmailHolder] = useState('')
     let [selectedDate, setSelectedDate] = useState(null)
     let [selectedTime, setSelectedTime] = useState(null)
     let [timeData, setTimeData] = useState([])
@@ -73,6 +71,22 @@ function Main() {
     let [dHolder,setDHolder] = useState('')
     let [isLoading,setIsLoading] = useState(false)
 
+    // this is day array
+    const [arrayHolder, setArrayHolder] = useState([
+        moment().year(),
+        moment().year() + 1
+    ])
+
+    useEffect(() => {
+     console.log(moment().month());
+    }, [])
+    const [arrayMHolder, setArrayMHolder] = useState({
+
+    })
+    
+
+
+
     const checkImagePromise = ( url ) => new Promise( (resolve, reject ) => {
         let img = new Image();
             img.addEventListener('load', resolve );
@@ -80,7 +94,6 @@ function Main() {
             img.src = url;
     });
 
-    
     const loadData = async ()=>{
         let paramsNew = searchParams.get('id')
         if(paramsNew){
@@ -92,7 +105,6 @@ function Main() {
         setIsLoading(true)
         await api(`portfolio/user_landing/master/?mst=${searchParams.get('id')}`)
        .then((response)=>{
-           console.log(response);
            setUserData(response.data[0])
            setIsLoading(false)
        })
@@ -107,7 +119,6 @@ function Main() {
                 setServicesData(response.data)
                 let images = document.querySelectorAll('img');
                 images.forEach( img => {
-                    console.log(img);
                     checkImagePromise( img.src )
                         .then( res => {
                             // С картинкой все ок - ничего не делаем
@@ -212,7 +223,6 @@ function Main() {
     function clearForms(){
         setNameHolder('')
         setPhoneHolder('')
-        setEmailHolder('')
         setSelectedService('')
         setSelectedDate(null)
         setSelectedTime('')
@@ -225,7 +235,17 @@ function Main() {
     useEffect(()=>{
         setSelectedTime(selectedTime)
         console.log(selectedTime)
-    }, [selectedTime])
+    }, [selectedTime])    
+
+    const getFreeDay = (value)=>{
+        console.log(value);
+        setMHolder(value);
+        dispatch(getMastersShedule({
+            id: searchParams.get('id'),
+            year: yHolder,
+            monthe: value
+        }))
+    }
 
     return (
         <Spin  size="large" spinning={isLoading}>
@@ -266,8 +286,8 @@ function Main() {
             title={item.name}
             description={item.description}
             />
-            <div className={'card-price'}>{item.cost} руб.</div>
-
+            <div className={'card-timeline'}>продолжительность: {item.duration}</div>
+            <div className={'card-price'}>цена: {item.cost} руб.</div>
             </Card>
             ))}
 
@@ -316,92 +336,73 @@ function Main() {
             <Input id={'phone-input'} value={phoneHolder} onChange={((e) => {
             setPhoneHolder(e.target.value)
         })} required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}/>
-            <Input value={emailHolder} htmlType={'email'} onChange={((e) => {
-            setEmailHolder(e.target.value)
-        })}  placeholder={'Почта'} className={'form-input'}/>
             <select value={selectedService} required onChange={(e) => {
             setSelectedService(e.target.value)
         }}
-            className={'ant-input form-input email-select'}>
+            className={'ant-input form-input email-select current'}>
             <option selected disabled className={'pre-selected'} value={""}>Услуга</option>
-        {servicesData.map(item => (
-            <option key={item.id} value={item.id}>{item.name}</option>
+            {servicesData.map(item => (
+            <option key={item.id} value={item.id}>{item.name + ' - ' + item.duration}</option>
             ))}
             </select>
             <div className={'dates-block'}>
+            <select required value={yHolder} className={'dates-item form-input'} onChange={(e) => {
+                    setYHolder(e.target.value)
+                }} name="year">
+                {arrayHolder.map(elem => <option key={elem} value={elem}>{elem}</option>)}
+            </select>
+            <select required value={mHolder} className={'dates-item email-select form-input'} onChange={(e) =>
+                getFreeDay(e.target.value)
+            } name="month">
+                <option selected disabled value="">Месяц</option>
+                <option value="01">Январь</option>
+                <option value="02">Февраль</option>
+                <option value="03">Март</option>
+                <option value="04">Апрель</option>
+                <option value="05">Май</option>
+                <option value="06">Июнь</option>
+                <option value="07">Июль</option>
+                <option value="08">Август</option>
+                <option value="09">Сентябрь</option>
+                <option value="10">Октябрь</option>
+                <option value="11">Ноябрь</option>
+                <option value="12">Декарь</option>
+            </select>
             <select required value={dHolder} className={'dates-item email-select form-input'} onChange={(e) => {
             setDHolder(e.target.value)
         }} name="day">
-            <option disabled selected value="">День</option>
-            <option value="01">1</option>
-            <option value="02">2</option>
-            <option value="03">3</option>
-            <option value="04">4</option>
-            <option value="05">5</option>
-            <option value="06">6</option>
-            <option value="07">7</option>
-            <option value="08">8</option>
-            <option value="09">9</option>
-            <option value="10">10</option>
-            <option value="11">11</option>
-            <option value="12">12</option>
-            <option value="13">13</option>
-            <option value="14">14</option>
-            <option value="15">15</option>
-            <option value="16">16</option>
-            <option value="17">17</option>
-            <option value="18">18</option>
-            <option value="19">19</option>
-            <option value="20">20</option>
-            <option value="21">21</option>
-            <option value="22">22</option>
-            <option value="23">23</option>
-            <option value="24">24</option>
-            <option value="25">25</option>
-            <option value="26">26</option>
-            <option value="27">27</option>
-            <option value="28">28</option>
-            <option value="29">29</option>
-            <option value="30">30</option>
-            <option value="31">31</option>
-            </select>
-            <select required value={mHolder} className={'dates-item email-select form-input'} onChange={(e) => {
-            setMHolder(e.target.value)
-        }} name="month">
-            <option selected disabled value="">Месяц</option>
-            <option value="01">Январь</option>
-            <option value="02">Февраль</option>
-            <option value="03">Март</option>
-            <option value="04">Апрель</option>
-            <option value="05">Май</option>
-            <option value="06">Июнь</option>
-            <option value="07">Июль</option>
-            <option value="08">Август</option>
-            <option value="09">Сентябрь</option>
-            <option value="10">Октябрь</option>
-            <option value="11">Ноябрь</option>
-            <option value="12">Декарь</option>
-            </select>
-            <select required value={yHolder} className={'dates-item form-input'} onChange={(e) => {
-            setYHolder(e.target.value)
-        }} name="year">
-            <option value="2038">2038</option>
-            <option value="2037">2037</option>
-            <option value="2036">2036</option>
-            <option value="2035">2035</option>
-            <option value="2034">2034</option>
-            <option value="2033">2033</option>
-            <option value="2032">2032</option>
-            <option value="2031">2031</option>
-            <option value="2030">2030</option>
-            <option value="2029">2029</option>
-            <option value="2028">2028</option>
-            <option value="2027">2027</option>
-            <option value="2026">2026</option>
-            <option value="2025">2025</option>
-            <option value="2024">2024</option>
-            <option value="2023">2023</option>
-            <option value="2022">2022</option>
+                <option disabled selected value="">День</option>
+                <option value="01">1</option>
+                <option value="02">2</option>
+                <option value="03">3</option>
+                <option value="04">4</option>
+                <option value="05">5</option>
+                <option value="06">6</option>
+                <option value="07">7</option>
+                <option value="08">8</option>
+                <option value="09">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
+                <option value="21">21</option>
+                <option value="22">22</option>
+                <option value="23">23</option>
+                <option value="24">24</option>
+                <option value="25">25</option>
+                <option value="26">26</option>
+                <option value="27">27</option>
+                <option value="28">28</option>
+                <option value="29">29</option>
+                <option value="30">30</option>
+                <option value="31">31</option>
             </select>
             </div>
         {notWorking &&
@@ -432,7 +433,7 @@ function Main() {
             setFeedbackV(false)
         }}>Отмена</Button>
             <Button
-            disabled={recordCheck === false || notWorking === true || nameHolder === '' || phoneHolder === '' || emailHolder === '' || selectedService === null || selectedDate === null || selectedTime === null}
+            disabled={recordCheck === false || notWorking === true || nameHolder === '' || phoneHolder === '' || selectedService === null || selectedDate === null || selectedTime === null}
             htmlType="submit">Создать</Button>
 
             </div>

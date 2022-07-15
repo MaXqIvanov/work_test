@@ -391,7 +391,7 @@ function Main() {
                     }} name="day">
                         <option disabled selected value="">День</option>
                         {shedulesMaster && shedulesMaster.map(elem => 
-                            <option disabled={elem.working == false}
+                            <option key={elem.date} disabled={elem.working == false}
                             className={elem.working == false ? 'option_day_disabled' : 'option_day_active'} value={elem.date.split('.')[0]}>{elem.date.split('.')[0]}</option>
                             )}
                     </select>

@@ -37,6 +37,7 @@ const { TextArea } = Input;
 function Main() {
     //const {user} = useSelector((state)=> state.main)   
     const dispatch = useDispatch(); 
+    const {shedulesMaster} = useSelector(state => state.main)
     //dispatch(addUser(params))
     const [searchParams, setSearchParams] = useSearchParams();
     const { Option } = Select;
@@ -71,18 +72,40 @@ function Main() {
     let [dHolder,setDHolder] = useState('')
     let [isLoading,setIsLoading] = useState(false)
 
+    const [loadDate, setIsLoadDate] = useState(null)
     // this is day array
+
     const [arrayHolder, setArrayHolder] = useState([
         moment().year(),
         moment().year() + 1
     ])
-
+    const [arrayMHolder, setArrayMHolder] = useState([])
+    // end this is array
     useEffect(() => {
-     console.log(moment().month());
-    }, [])
-    const [arrayMHolder, setArrayMHolder] = useState({
+        if(yHolder == moment().year()){
+            setArrayMHolder([])
+            for(let i = 1; i< 13; i++){
+                setArrayMHolder(arrayMHolder=> [...arrayMHolder, {value: i, title: i=='01' ? 'Январь' : i=='02' ? 'Февраль' :
+                i == '03' ? 'Март' : i == '04' ? 'Апрель' : i == '05' ? 'Май' : i == '06' ? 'Июнь' :
+                i == '07' ? 'Июль' : i == '08' ? 'Август' : i == '09' ? 'Сентябрь' : i == '10' ? 'Октябрь' :
+                i == '11' ? 'Ноябрь' : 'Декабрь', active: (moment().month() >= i ? 1 : 0)}])
+             }   
+        } else{
+            setArrayMHolder([])
+            for(let i = 1; i< 13; i++){
+                setArrayMHolder(arrayMHolder=> [...arrayMHolder, {value: i, title: i=='01' ? 'Январь' : i=='02' ? 'Февраль' :
+                i == '03' ? 'Март' : i == '04' ? 'Апрель' : i == '05' ? 'Май' : i == '06' ? 'Июнь' :
+                i == '07' ? 'Июль' : i == '08' ? 'Август' : i == '09' ? 'Сентябрь' : i == '10' ? 'Октябрь' :
+                i == '11' ? 'Ноябрь' : 'Декабрь', active: 0}])
+             }   
+        }
+        setMHolder("")
+    }, [yHolder])
 
-    })
+        useEffect(() => {
+           console.log(shedulesMaster); 
+        }, [mHolder])
+        
     
 
 
@@ -141,6 +164,8 @@ function Main() {
     },[])
     useEffect(()=>{
         if(mHolder !== '' && dHolder !== ''){
+            console.log("working_now");
+            setIsLoadDate(true);
             api(`portfolio/user_landing/free_time/?sv=${selectedService}&d=${dHolder + '.' + mHolder + '.' + yHolder}`)
             .then((response)=>{
                 if (response.status === 200) {
@@ -164,6 +189,7 @@ function Main() {
                     setNotSetService(false)
                 }
             })
+            .finally(()=>setIsLoadDate(null))
         }
     },[selectedService,mHolder,dHolder,yHolder])
     function sendRecord(){
@@ -238,7 +264,6 @@ function Main() {
     }, [selectedTime])    
 
     const getFreeDay = (value)=>{
-        console.log(value);
         setMHolder(value);
         dispatch(getMastersShedule({
             id: searchParams.get('id'),
@@ -349,61 +374,29 @@ function Main() {
             <select required value={yHolder} className={'dates-item form-input'} onChange={(e) => {
                     setYHolder(e.target.value)
                 }} name="year">
-                {arrayHolder.map(elem => <option key={elem} value={elem}>{elem}</option>)}
+                <option selected disabled value="">День</option>
+                {arrayHolder && arrayHolder.map(elem => <option key={elem} value={elem}>{elem}</option>)}
             </select>
             <select required value={mHolder} className={'dates-item email-select form-input'} onChange={(e) =>
                 getFreeDay(e.target.value)
             } name="month">
                 <option selected disabled value="">Месяц</option>
-                <option value="01">Январь</option>
-                <option value="02">Февраль</option>
-                <option value="03">Март</option>
-                <option value="04">Апрель</option>
-                <option value="05">Май</option>
-                <option value="06">Июнь</option>
-                <option value="07">Июль</option>
-                <option value="08">Август</option>
-                <option value="09">Сентябрь</option>
-                <option value="10">Октябрь</option>
-                <option value="11">Ноябрь</option>
-                <option value="12">Декарь</option>
+                {arrayMHolder.length > 0 && arrayMHolder.map(elem=>
+                    <option key={elem.value} value={elem.value} disabled={elem.active}
+                    className={elem.active == 0 ? 'option_active' : 'option_disabled'}>{elem.title}</option>
+                )}
             </select>
-            <select required value={dHolder} className={'dates-item email-select form-input'} onChange={(e) => {
-            setDHolder(e.target.value)
-        }} name="day">
-                <option disabled selected value="">День</option>
-                <option value="01">1</option>
-                <option value="02">2</option>
-                <option value="03">3</option>
-                <option value="04">4</option>
-                <option value="05">5</option>
-                <option value="06">6</option>
-                <option value="07">7</option>
-                <option value="08">8</option>
-                <option value="09">9</option>
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
-                <option value="13">13</option>
-                <option value="14">14</option>
-                <option value="15">15</option>
-                <option value="16">16</option>
-                <option value="17">17</option>
-                <option value="18">18</option>
-                <option value="19">19</option>
-                <option value="20">20</option>
-                <option value="21">21</option>
-                <option value="22">22</option>
-                <option value="23">23</option>
-                <option value="24">24</option>
-                <option value="25">25</option>
-                <option value="26">26</option>
-                <option value="27">27</option>
-                <option value="28">28</option>
-                <option value="29">29</option>
-                <option value="30">30</option>
-                <option value="31">31</option>
-            </select>
+            {mHolder && 
+              <select required value={dHolder} className={'dates-item email-select form-input'} onChange={(e) => {
+                setDHolder(e.target.value)
+            }} name="day">
+                    <option disabled selected value="">День</option>
+                    {shedulesMaster && shedulesMaster.map(elem => 
+                        <option disabled={elem.working == false}
+                        className={elem.working == false ? 'option_day_disabled' : 'option_day_active'} value={elem.date.split('.')[0]}>{elem.date.split('.')[0]}</option>
+                        )}
+                </select>
+            }
             </div>
         {notWorking &&
             <Alert className={'form-input'} message="Мастер не работает в этот день" type="error"/>
@@ -411,7 +404,7 @@ function Main() {
         {notSetService && 
             <Alert className={'form-input'} type="error" message="Пожалуйста, выберите услугу" />
         }
-        {timeData.length > 0 &&
+        {loadDate == null ? timeData.length > 0 &&
             <div className={'time-block'}>
         {timeData.map(item => (
             <div onClick={() => {
@@ -420,6 +413,7 @@ function Main() {
             key={item} value={item}>{item}</div>
             ))}
             </div>
+            :  <Spin  size="large" spinning={loadDate}></Spin>
         }
             <TextArea onChange={((e) => {
             setCommentHolder(e.target.value)

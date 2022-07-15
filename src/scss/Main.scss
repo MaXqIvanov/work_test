@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap');
 .avatar{
     border: 2px solid #190dfc;
 }
@@ -28,16 +29,18 @@
     align-items: center;
 }
 .name-title{
-    font-size: 2rem;
+    font-size: 2.2rem;
     font-weight: bold;
     margin-top: 8px;
 }
 .services-title{
+    font-weight: 600;
     margin-top: 16px;
     margin-bottom: 16px;
     font-size: 2rem;
 }
 .feedback-title{
+    font-weight: 600;
     margin-top: 16px;
     margin-bottom: 16px;
     font-size: 2rem;
@@ -60,7 +63,12 @@
     justify-content: center;
 }
 .service-button{
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    border-radius: 5px;
     margin-top: 16px;
+    padding-left: 20px;
+    padding-right: 20px;
     background-color: #A60DBF !important;
     color: white !important;
 }
@@ -68,7 +76,7 @@
 width:300px ;
 border-radius: 25px;
 overflow: hidden;
-box-shadow: 0px 0px 5px rgb(202, 202, 202);
+box-shadow: 0px 0px 8px rgb(226, 226, 226);
 }
 .card-text{
     overflow-y: auto;
@@ -168,7 +176,7 @@ option{
 }
 .dates-block{
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
 
 }
 .dates-item{
@@ -230,4 +238,16 @@ option {
 .ant-card-body{
     padding: 20px;
     padding-bottom: 10px;
+}
+.option_disabled{
+    color: rgb(143, 143, 143) !important;
+}
+.option_active{
+    cursor: pointer !important;
+    &:hover{
+        cursor: pointer !important;
+    }
+}
+.option_day_disabled{
+    color: red !important;
 }

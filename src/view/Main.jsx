@@ -73,6 +73,7 @@ function Main() {
     let [isLoading,setIsLoading] = useState(false)
 
     const [loadDate, setIsLoadDate] = useState(null)
+    const [sendData, setSendData] = useState(false);
     // this is day array
 
     const [arrayHolder, setArrayHolder] = useState([
@@ -100,15 +101,7 @@ function Main() {
              }   
         }
         setMHolder("")
-    }, [yHolder])
-
-        useEffect(() => {
-           console.log(shedulesMaster); 
-        }, [mHolder])
-        
-    
-
-
+    }, [yHolder])    
 
     const checkImagePromise = ( url ) => new Promise( (resolve, reject ) => {
         let img = new Image();
@@ -138,7 +131,6 @@ function Main() {
         })
         await api(`portfolio/user_landing/services/?mst=${searchParams.get('id')}`)
             .then((response)=>{
-                console.log(response);
                 setServicesData(response.data)
                 let images = document.querySelectorAll('img');
                 images.forEach( img => {
@@ -163,8 +155,7 @@ function Main() {
        loadData()
     },[])
     useEffect(()=>{
-        if(mHolder !== '' && dHolder !== ''){
-            console.log("working_now");
+        if(mHolder !== '' && dHolder !== '' && selectedService){
             setIsLoadDate(true);
             api(`portfolio/user_landing/free_time/?sv=${selectedService}&d=${dHolder + '.' + mHolder + '.' + yHolder}`)
             .then((response)=>{
@@ -193,6 +184,7 @@ function Main() {
         }
     },[selectedService,mHolder,dHolder,yHolder])
     function sendRecord(){
+        setSendData(true)
         api.post('portfolio/user_landing/create_record/',
             {
                 name: nameHolder,
@@ -214,14 +206,16 @@ function Main() {
             })
             .catch((err)=>{
                 if (err.response.status === 400) {
-                    console.log(err.response)
                     error(err.response.data.detail)
                 }
+            })
+            .finally(()=> {
+                setTimeData('')
+                setSendData(false)
             })
     }
 
     function sendFeedback(){
-        console.log('feed')
         api.post('portfolio/user_landing/send_grade/',
             {
                 name: nameFeedHolder,
@@ -253,6 +247,7 @@ function Main() {
         setSelectedDate(null)
         setSelectedTime('')
         setCommentHolder('')
+        setNotSetService(false)
     }
 
     const error = (text) => {
@@ -260,7 +255,6 @@ function Main() {
     }
     useEffect(()=>{
         setSelectedTime(selectedTime)
-        console.log(selectedTime)
     }, [selectedTime])    
 
     const getFreeDay = (value)=>{
@@ -273,7 +267,7 @@ function Main() {
     }
 
     return (
-        <Spin  size="large" spinning={isLoading}>
+        <Spin className="spinner_loading"  size="large" spinning={isLoading || sendData}>
     <Content className={isLoading ? 'main-container loading' : 'main-container'}>
             <div className={'img-block'}>
                 <img src={userData.avatar} alt=""/>
@@ -362,6 +356,9 @@ function Main() {
             setPhoneHolder(e.target.value)
         })} required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}/>
             <select value={selectedService} required onChange={(e) => {
+            setMHolder('')
+            setDHolder('')
+            setTimeData('')
             setSelectedService(e.target.value)
         }}
             className={'ant-input form-input email-select current'}>
@@ -371,38 +368,44 @@ function Main() {
             ))}
             </select>
             <div className={'dates-block'}>
-            <select required value={yHolder} className={'dates-item form-input'} onChange={(e) => {
-                    setYHolder(e.target.value)
-                }} name="year">
-                <option selected disabled value="">День</option>
-                {arrayHolder && arrayHolder.map(elem => <option key={elem} value={elem}>{elem}</option>)}
-            </select>
-            <select required value={mHolder} className={'dates-item email-select form-input'} onChange={(e) =>
-                getFreeDay(e.target.value)
-            } name="month">
-                <option selected disabled value="">Месяц</option>
-                {arrayMHolder.length > 0 && arrayMHolder.map(elem=>
-                    <option key={elem.value} value={elem.value} disabled={elem.active}
-                    className={elem.active == 0 ? 'option_active' : 'option_disabled'}>{elem.title}</option>
-                )}
-            </select>
-            {mHolder && 
-              <select required value={dHolder} className={'dates-item email-select form-input'} onChange={(e) => {
-                setDHolder(e.target.value)
-            }} name="day">
-                    <option disabled selected value="">День</option>
-                    {shedulesMaster && shedulesMaster.map(elem => 
-                        <option disabled={elem.working == false}
-                        className={elem.working == false ? 'option_day_disabled' : 'option_day_active'} value={elem.date.split('.')[0]}>{elem.date.split('.')[0]}</option>
-                        )}
-                </select>
+            {selectedService && 
+                    <>
+                    <select required value={yHolder} className={'dates-item form-input'} onChange={(e) => {
+                        setYHolder(e.target.value)
+                    }} name="year">
+                    <option selected disabled value="">День</option>
+                    {arrayHolder && arrayHolder.map(elem => <option key={elem} value={elem}>{elem}</option>)}
+                    </select>
+                    <select required value={mHolder} className={'dates-item email-select form-input'} onChange={(e) =>
+                    getFreeDay(e.target.value)
+                    } name="month">
+                    <option selected disabled value="">Месяц</option>
+                    {arrayMHolder.length > 0 && arrayMHolder.map(elem=>
+                        <option key={elem.value} value={elem.value} disabled={elem.active}
+                        className={elem.active == 0 ? 'option_active' : 'option_disabled'}>{elem.title}</option>
+                    )}
+                    </select>
+                    {mHolder && 
+                    <select required value={dHolder} className={'dates-item email-select form-input'} onChange={(e) => {
+                    setDHolder(e.target.value)
+                    }} name="day">
+                        <option disabled selected value="">День</option>
+                        {shedulesMaster && shedulesMaster.map(elem => 
+                            <option disabled={elem.working == false}
+                            className={elem.working == false ? 'option_day_disabled' : 'option_day_active'} value={elem.date.split('.')[0]}>{elem.date.split('.')[0]}</option>
+                            )}
+                    </select>
+                    }
+                    </>
             }
+           
             </div>
         {notWorking &&
             <Alert className={'form-input'} message="Мастер не работает в этот день" type="error"/>
         }
-        {notSetService && 
+        {notSetService ? selectedService !== '' && 
             <Alert className={'form-input'} type="error" message="Пожалуйста, выберите услугу" />
+            : <></>
         }
         {loadDate == null ? timeData.length > 0 &&
             <div className={'time-block'}>

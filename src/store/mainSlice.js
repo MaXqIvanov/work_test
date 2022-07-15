@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../plugins/axios/api';
+import moment from "moment";
 
 export const getMastersShedule = createAsyncThunk(
   'main/getMastersShedule',
   async (params, action) => {
-    console.log(params);
     const response = await api(`portfolio/user_landing/actual_chedule/${params.year}/${params.monthe}/?mst=${params.id}`)
-    return response
+    return {response, params}
   }
 )
 
@@ -21,11 +21,19 @@ const mainSlice = createSlice({
   },
   extraReducers: {
     [getMastersShedule.pending]: (state, action) => {
+      state.shedulesMaster = []
     },
     [getMastersShedule.fulfilled]: (state, { payload }) => {
-      console.log("this is payload");
-      console.log(payload);
-      state.shedulesMaster = payload.data
+      let response = payload.response.data
+      let day = Number(moment().format('L').split('/')[1]); 
+      response = response.map((elem,index)=> {
+        if(day >= (Number(elem.date.split('.')[0])) && (moment().year() == payload.params.year)){
+          return {...elem, 'working': false}
+        }else{
+          return {...elem}
+        }
+      })
+      state.shedulesMaster = response
     },
     [getMastersShedule.rejected]: (state, action) => {
     },

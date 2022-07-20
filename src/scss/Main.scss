@@ -109,9 +109,21 @@ box-shadow: 0px 0px 8px rgb(226, 226, 226);
     justify-content: space-between;
     align-items: center;
 }
+.ant-comment-nested{
+
+    @media(max-width: 630px){
+        width: fit-content;
+        max-width: 100px;
+    }
+}
 .comment-grade-div{
     flex-wrap: nowrap;
     white-space: nowrap;
+}
+.grade{
+    @media(max-width: 630px){
+        font-size: small;
+    }
 }
 .form-input{
     margin-bottom: 8px !important;

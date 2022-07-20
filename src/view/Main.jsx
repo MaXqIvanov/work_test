@@ -225,9 +225,11 @@ function Main() {
                 assessed: searchParams.get('id'),
             })
             .then((response)=>{
+                console.log(response);
                 if (response.status === 200){
                     setModalV(false)
                     setSuccessFeedModalV(true)
+                    setFeedbackData([response.data, ...feedbackData])
                     setTimeout(() => {
                         setSuccessFeedModalV(false)
                     }, 3000);
@@ -337,7 +339,7 @@ function Main() {
             >
             <Tooltip placement="left" title={item.grade}>
             <div className={'comment-grade-div'}>
-            <Rate disabled value={item.grade}></Rate>
+            <Rate className={'grade'} disabled value={item.grade}></Rate>
             </div>
             </Tooltip>
             </Comment>

@@ -101,7 +101,7 @@ function Main() {
              }   
         }
         setMHolder("")
-    }, [yHolder])    
+    }, [yHolder])        
 
     const checkImagePromise = ( url ) => new Promise( (resolve, reject ) => {
         let img = new Image();
@@ -222,7 +222,7 @@ function Main() {
                 phone: '+7' + phoneFeedHolder,
                 comment: commentFeedHolder,
                 grade: gradeFeedHolder,
-                assessed: searchParams.get('id').id,
+                assessed: searchParams.get('id'),
             })
             .then((response)=>{
                 if (response.status === 200){

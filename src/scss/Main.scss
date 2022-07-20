@@ -110,10 +110,23 @@ box-shadow: 0px 0px 8px rgb(226, 226, 226);
     align-items: center;
 }
 .ant-comment-nested{
-
     @media(max-width: 630px){
         width: fit-content;
         max-width: 100px;
+        margin-left: 20px;
+    }
+}
+.ant-comment{
+
+    @media(max-width: 630px){
+        display: grid;
+        grid-template-columns: 75% 25%;
+    }
+}
+.ant-rate-star:not(:last-child) {
+
+    @media(max-width: 630px){
+        margin-right: 4px;
     }
 }
 .comment-grade-div{
@@ -122,7 +135,7 @@ box-shadow: 0px 0px 8px rgb(226, 226, 226);
 }
 .grade{
     @media(max-width: 630px){
-        font-size: small;
+        font-size: x-small;
     }
 }
 .form-input{

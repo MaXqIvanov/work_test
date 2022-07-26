@@ -26,7 +26,6 @@ import Meta from "antd/es/card/Meta";
 import Modal from "antd/es/modal/Modal";
 import {PlusOutlined} from "@ant-design/icons";
 import Error from "../components/FailedPage/Error";
-import {YearSelect, MonthSelect, DaySelect} from 'ru-react-select';
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import {getMastersShedule} from '../store/mainSlice';

@@ -1,5 +1,4 @@
 import api from "../plugins/axios/api";
-//import 'react-calendar/dist/Calendar.css';
 import {Content} from "antd/es/layout/layout";
 import Avatar from "antd/es/avatar/avatar";
 import {useEffect, useState} from "react";
@@ -31,7 +30,8 @@ import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import {getMastersShedule} from '../store/mainSlice';
 import image from '../media/image_not_found.svg'
-//import Calendar from 'react-calendar';
+import { ConfigProvider } from 'antd';
+import ru_RU from "antd/lib/locale/ru_RU";
 
 const { TextArea } = Input;
 
@@ -270,15 +270,11 @@ function Main() {
         }))
     }
 
-    // useEffect(() => {
-    //   first
     
-    //   return () => {
-    //     second
-    //   }
-    // }, [third])
-    
-
+    const disabledDate = current => {
+        // Can not select days before today and today
+        return current && current < (moment().endOf('day') - 1);
+      };
     return (
         <Spin className="spinner_loading"  size="large" spinning={isLoading || sendData}>
     <Content className={isLoading ? 'main-container loading' : 'main-container'}>
@@ -381,7 +377,7 @@ function Main() {
             ))}
             </select>
             <div className={'dates-block'}>
-            {selectedService && 
+            {/* {selectedService && 
                     <>
                     <select required value={yHolder} className={'dates-item form-input'} onChange={(e) => {
                         setYHolder(e.target.value)
@@ -414,8 +410,10 @@ function Main() {
                     : <></>
                     }
                     </>
-            }
-                      {/* <Calendar onChange={onChange} value={value} /> */}
+            } */}
+             <ConfigProvider locale={ru_RU} >
+                <DatePicker  disabledDate={disabledDate}/>
+             </ConfigProvider>
             </div>
         {notWorking &&
             <Alert className={'form-input'} message="Мастер не работает в этот день" type="error"/>

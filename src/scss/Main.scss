@@ -77,6 +77,9 @@ width:300px ;
 border-radius: 25px;
 overflow: hidden;
 box-shadow: 0px 0px 8px rgb(226, 226, 226);
+display: grid;
+grid-template-rows: 45% 45%;
+row-gap: 10%;
 }
 .card-text{
     overflow-y: auto;
@@ -92,11 +95,18 @@ box-shadow: 0px 0px 8px rgb(226, 226, 226);
     font-size: 14px;
     font-weight:bold ;
 }
+.ant-card-body{
+}
+.group-card{
+    
+}
 .card-timeline{
     margin-top: 20px;
     font-weight: bold;
     float: right;
+    float: bottom;
     font-size: 14px;
+    float: inline-end;
 }
 .feedback-list{
     width: 92%;

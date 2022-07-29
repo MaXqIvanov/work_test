@@ -267,6 +267,7 @@ function Main() {
         }))
     }
 
+
     return (
         <Spin className="spinner_loading"  size="large" spinning={isLoading || sendData}>
     <Content className={isLoading ? 'main-container loading' : 'main-container'}>
@@ -386,16 +387,20 @@ function Main() {
                         className={elem.active == 0 ? 'option_active' : 'option_disabled'}>{elem.title}</option>
                     )}
                     </select>
-                    {mHolder && 
+                    {mHolder ?
+                    shedulesMaster?.length !== 0 ?
                     <select required value={dHolder} className={'dates-item email-select form-input'} onChange={(e) => {
                     setDHolder(e.target.value)
                     }} name="day">
-                        <option disabled selected value="">День</option>
+                            <option disabled selected value="">День</option>
                         {shedulesMaster && shedulesMaster.map(elem => 
                             <option key={elem.date} disabled={elem.working == false}
                             className={elem.working == false ? 'option_day_disabled' : 'option_day_active'} value={elem.date.split('.')[0]}>{elem.date.split('.')[0]}</option>
                             )}
                     </select>
+                    :<select className={'dates-item email-select form-input'}>
+                        <option disabled selected>Записей нет</option></select>
+                    : <></>
                     }
                     </>
             }

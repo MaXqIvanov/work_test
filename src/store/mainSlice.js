@@ -24,10 +24,11 @@ const mainSlice = createSlice({
       state.shedulesMaster = []
     },
     [getMastersShedule.fulfilled]: (state, { payload }) => {
+      console.log(payload);
       let response = payload.response.data
       let day = Number(moment().format('L').split('/')[1]); 
       response = response.map((elem,index)=> {
-        if(day >= (Number(elem.date.split('.')[0])) && (moment().year() == payload.params.year)){
+        if(day >= (Number(elem.date.split('.')[0])) && (moment().year() == payload.params.year) && (moment().month() === payload.params.month)){
           return {...elem, 'working': false}
         }else{
           return {...elem}

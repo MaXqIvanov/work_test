@@ -1,4 +1,5 @@
 import api from "../plugins/axios/api";
+import 'react-calendar/dist/Calendar.css';
 import {Content} from "antd/es/layout/layout";
 import Avatar from "antd/es/avatar/avatar";
 import {useEffect, useState} from "react";
@@ -30,10 +31,12 @@ import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import {getMastersShedule} from '../store/mainSlice';
 import image from '../media/image_not_found.svg'
+import Calendar from 'react-calendar';
 
 const { TextArea } = Input;
 
 function Main() {
+    const [value, onChange] = useState(new Date());
     //const {user} = useSelector((state)=> state.main)   
     const dispatch = useDispatch(); 
     const {shedulesMaster} = useSelector(state => state.main)
@@ -267,6 +270,14 @@ function Main() {
         }))
     }
 
+    // useEffect(() => {
+    //   first
+    
+    //   return () => {
+    //     second
+    //   }
+    // }, [third])
+    
 
     return (
         <Spin className="spinner_loading"  size="large" spinning={isLoading || sendData}>
@@ -404,7 +415,7 @@ function Main() {
                     }
                     </>
             }
-           
+                      {/* <Calendar onChange={onChange} value={value} /> */}
             </div>
         {notWorking &&
             <Alert className={'form-input'} message="Мастер не работает в этот день" type="error"/>

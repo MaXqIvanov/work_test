@@ -1,5 +1,5 @@
 import api from "../plugins/axios/api";
-import 'react-calendar/dist/Calendar.css';
+//import 'react-calendar/dist/Calendar.css';
 import {Content} from "antd/es/layout/layout";
 import Avatar from "antd/es/avatar/avatar";
 import {useEffect, useState} from "react";
@@ -31,7 +31,7 @@ import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import {getMastersShedule} from '../store/mainSlice';
 import image from '../media/image_not_found.svg'
-import Calendar from 'react-calendar';
+//import Calendar from 'react-calendar';
 
 const { TextArea } = Input;
 

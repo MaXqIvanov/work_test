@@ -262,19 +262,60 @@ function Main() {
     }, [selectedTime])    
 
     const getFreeDay = (value)=>{
-        setMHolder(value);
+        let year = value.year()
+        let month = value.month()
+        let day = value.day()
+        setMHolder(month)
+        setYHolder(year)
         dispatch(getMastersShedule({
             id: searchParams.get('id'),
-            year: yHolder,
-            monthe: value
+            year: year,
+            monthe: month + 1,
         }))
     }
-
+    const getCurrentDay = (value)=>{
+        setYHolder(value.year())
+        setMHolder(value.month() + 1)
+        setDHolder(value.date())
+    }
     
-    const disabledDate = current => {
-        // Can not select days before today and today
-        return current && current < (moment().endOf('day') - 1);
+    const disabledDate = (current) => {
+        // Can not select days before today and toda
+        // console.log(shedulesMaster[1]?.date);
+        // console.log(current.valueOf());
+        //let date = new Date(shedulesMaster[1]?.date)
+        // console.log(date?.getTime());
+        //console.log(current.date());
+        //console.log(shedulesMaster[1]?.date?.split('.')[0]);
+       // let cell = document.getElementsByClassName('ant-picker-cell')
+        // cell.filter((elem)=>{
+        //     if()
+        // })
+        //console.log(cell);
+        //return current <= (moment().startOf('day'));
+
+        // return {
+        //     disabledDate: () => shedulesMaster[1]?.date
+        // }
+
+        let date = shedulesMaster[1]?.date
+        date = date?.split('.')[0]
+        console.log(date);
+        if(!current){
+			return false
+		}else{
+		// больше текущей даты не могу выбрать время> момент ()
+		 // Менее текущей даты нельзя выбрать время <moment (). Subtract (1, "days")
+		 //Выбираем только первые 7 после 7 time <moment (). Subtract (7, "days") || time> moment (). Add (7, 'd')
+			return current <= (moment().startOf('day')) || current < moment().subtract(7, "days") || current !== moment().add(2, 'd')
+		}
+
+
+
+        //ant-picker-cell 
+        //ant-picker-cell-disabled
       };
+
     return (
         <Spin className="spinner_loading"  size="large" spinning={isLoading || sendData}>
     <Content className={isLoading ? 'main-container loading' : 'main-container'}>
@@ -411,9 +452,13 @@ function Main() {
                     }
                     </>
             } */}
-             <ConfigProvider locale={ru_RU} >
-                <DatePicker  disabledDate={disabledDate}/>
+            {selectedService && 
+             <ConfigProvider locale={ru_RU}>
+                <DatePicker onPanelChange={(value)=> getFreeDay(value)}
+                onChange={(date, dateString)=> getCurrentDay(date)} disabledDate={disabledDate}
+                className={'date_picker'}/>
              </ConfigProvider>
+            }
             </div>
         {notWorking &&
             <Alert className={'form-input'} message="Мастер не работает в этот день" type="error"/>

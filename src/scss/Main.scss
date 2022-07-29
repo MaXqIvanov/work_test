@@ -289,3 +289,18 @@ option {
 .spinner_loading{
     z-index: 9999 !important;
 }
+.date_picker{
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+// datepicker
+.ant-picker-date-panel .ant-picker-content{
+    width: 100%;
+}
+.ant-picker-date-panel{
+    @media(min-width: 550px){
+        width: 475px;
+    }
+    width: 310px;
+}

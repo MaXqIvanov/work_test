@@ -90,26 +90,27 @@ function Main() {
     ])
     const [arrayMHolder, setArrayMHolder] = useState([])
     // end this is array
-    useEffect(() => {
-        if(yHolder == moment().year()){
-            setArrayMHolder([])
-            for(let i = 1; i< 13; i++){
-                setArrayMHolder(arrayMHolder=> [...arrayMHolder, {value: i, title: i=='01' ? 'Январь' : i=='02' ? 'Февраль' :
-                i == '03' ? 'Март' : i == '04' ? 'Апрель' : i == '05' ? 'Май' : i == '06' ? 'Июнь' :
-                i == '07' ? 'Июль' : i == '08' ? 'Август' : i == '09' ? 'Сентябрь' : i == '10' ? 'Октябрь' :
-                i == '11' ? 'Ноябрь' : 'Декабрь', active: (moment().month() >= i ? 1 : 0)}])
-             }   
-        } else{
-            setArrayMHolder([])
-            for(let i = 1; i< 13; i++){
-                setArrayMHolder(arrayMHolder=> [...arrayMHolder, {value: i, title: i=='01' ? 'Январь' : i=='02' ? 'Февраль' :
-                i == '03' ? 'Март' : i == '04' ? 'Апрель' : i == '05' ? 'Май' : i == '06' ? 'Июнь' :
-                i == '07' ? 'Июль' : i == '08' ? 'Август' : i == '09' ? 'Сентябрь' : i == '10' ? 'Октябрь' :
-                i == '11' ? 'Ноябрь' : 'Декабрь', active: 0}])
-             }   
-        }
-        setMHolder("")
-    }, [yHolder])        
+
+    // useEffect(() => {
+    //     if(yHolder == moment().year()){
+    //         setArrayMHolder([])
+    //         for(let i = 1; i< 13; i++){
+    //             setArrayMHolder(arrayMHolder=> [...arrayMHolder, {value: i, title: i=='01' ? 'Январь' : i=='02' ? 'Февраль' :
+    //             i == '03' ? 'Март' : i == '04' ? 'Апрель' : i == '05' ? 'Май' : i == '06' ? 'Июнь' :
+    //             i == '07' ? 'Июль' : i == '08' ? 'Август' : i == '09' ? 'Сентябрь' : i == '10' ? 'Октябрь' :
+    //             i == '11' ? 'Ноябрь' : 'Декабрь', active: (moment().month() >= i ? 1 : 0)}])
+    //          }   
+    //     } else{
+    //         setArrayMHolder([])
+    //         for(let i = 1; i< 13; i++){
+    //             setArrayMHolder(arrayMHolder=> [...arrayMHolder, {value: i, title: i=='01' ? 'Январь' : i=='02' ? 'Февраль' :
+    //             i == '03' ? 'Март' : i == '04' ? 'Апрель' : i == '05' ? 'Май' : i == '06' ? 'Июнь' :
+    //             i == '07' ? 'Июль' : i == '08' ? 'Август' : i == '09' ? 'Сентябрь' : i == '10' ? 'Октябрь' :
+    //             i == '11' ? 'Ноябрь' : 'Декабрь', active: 0}])
+    //          }   
+    //     }
+    //     setMHolder("")
+    // }, [yHolder])        
 
     const checkImagePromise = ( url ) => new Promise( (resolve, reject ) => {
         let img = new Image();
@@ -170,7 +171,7 @@ function Main() {
                 if (response.status === 200) {
                     setTimeData(response.data.times)
                     setNotWorking(false)
-                    setSelectedDate(dHolder + '.' + mHolder + '.' + yHolder)
+                    setSelectedDate(mHolder + '.' + dHolder + '.' + yHolder)
                     setNotSetService(false)
                 }
             })
@@ -198,7 +199,7 @@ function Main() {
                 name: nameHolder,
                 phone: '+7' + phoneHolder,
                 service: selectedService,
-                date: selectedDate,
+                date: `${dHolder}.${mHolder}.${yHolder}`,
                 time: selectedTime,
                 comment: commentHolder
             })
@@ -268,10 +269,12 @@ function Main() {
     }, [selectedTime])    
 
     const getCurrentDay = (value)=>{
+        console.log(value);
         let day = String(value).split(' ')[2]
         setDHolder(day)
         setMHolder(value.getMonth() + 1)
-        setYHolder(String(value).split(' ')[3])
+        setYHolder(String(value)?.split(' ')[3])
+       setSelectedDate(mHolder + '.' + dHolder + '.' + yHolder)
     }
     useEffect(() => {
         console.log();
@@ -280,13 +283,21 @@ function Main() {
         year: moment().year(),
         monthe: moment().month() + 1
       }))
+      setMHolder(moment().month() + 1)
     }, [])
     
-    
+    const closeDatePicker = () => {
+        dispatch(getMastersShedule({
+            id: searchParams.get('id'),
+            year: moment().year(),
+            monthe: moment().month() + 1
+          }))
+    }
 
       const changeMonth = (month) => {
         let year = String(month).split(' ')[3]
         let current_month = month.getMonth()
+        setDHolder('')
         setMHolder(month.getMonth() + 1)
         setYHolder(String(month).split(' ')[3])
         dispatch(getMastersShedule({
@@ -297,13 +308,6 @@ function Main() {
       };
 
         function filterWeekends(date) {
-        //const currentShedules = await shedulesMaster.map((elem)=> date.getTime() === new Date(`${elem.date.split('.')[2]}-${elem.date.split('.')[1]}-${elem.date.split('.')[0]}T00:00`).getTime
-        //)
-        const currentShedules = [false, false, false]
-        let string = currentShedules.join(' || ')
-        console.log(string);
-        // Return false if Saturday or Sunday
-        // return date.getTime() === new Date('2022-08-15T00:00').getTime() || date.getTime() === new Date('2022-08-16T00:00').getTime();
         // !! dont look this strings )))
         return shedulesMaster[0]?.working === false && date.getTime() === new Date(`${shedulesMaster[0]?.date?.split('.')[2]}-${shedulesMaster[0]?.date?.split('.')[1]}-${shedulesMaster[0]?.date?.split('.')[0]}T00:00`).getTime()
         || shedulesMaster[1]?.working === false && date.getTime() === new Date(`${shedulesMaster[1]?.date?.split('.')[2]}-${shedulesMaster[1]?.date?.split('.')[1]}-${shedulesMaster[1]?.date?.split('.')[0]}T00:00`).getTime()
@@ -429,8 +433,6 @@ function Main() {
             setPhoneHolder(e.target.value)
         })} required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}/>
             <select value={selectedService} required onChange={(e) => {
-            setMHolder('')
-            setDHolder('')
             setTimeData('')
             setSelectedService(e.target.value)
         }}
@@ -485,14 +487,10 @@ function Main() {
                  value={selectedDate}
                  onChange={getCurrentDay}
                  shouldDisableDate={filterWeekends}
+                 onClose={()=>closeDatePicker()}
                />
                
              </MuiPickersUtilsProvider>
-            //  <ConfigProvider locale={ru_RU}>
-            //     <DatePicker onPanelChange={(value)=> getFreeDay(value)}
-            //     onChange={(date, dateString)=> getCurrentDay(date)} disabledDate={disabledDate}
-            //     className={'date_picker'}/>
-            //  </ConfigProvider>
             }
             </div>
         {notWorking &&

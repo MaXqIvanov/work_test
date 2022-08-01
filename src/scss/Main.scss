@@ -312,3 +312,11 @@ option {
     width: 100%;
     margin-bottom: 10px;
 }
+.MuiFormLabel-root.Mui-error{
+    color: black !important;
+}.MuiFormHelperText-root.Mui-error{
+    color: black !important;
+}
+.MuiInput-underline.Mui-error:after{
+    border-bottom-color: black !important;
+}

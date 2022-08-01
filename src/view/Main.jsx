@@ -10,7 +10,7 @@ import {
     Card,
     Comment,
     Spin,
-    DatePicker,
+   // DatePicker,
     Form,
     Input,
     Rate,
@@ -32,6 +32,12 @@ import {getMastersShedule} from '../store/mainSlice';
 import image from '../media/image_not_found.svg'
 import { ConfigProvider } from 'antd';
 import ru_RU from "antd/lib/locale/ru_RU";
+import 'date-fns';
+import DateFnsUtils from '@date-io/date-fns';
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker
+} from '@material-ui/pickers';
 
 const { TextArea } = Input;
 
@@ -261,61 +267,78 @@ function Main() {
         setSelectedTime(selectedTime)
     }, [selectedTime])    
 
-    const getFreeDay = (value)=>{
-        let year = value.year()
-        let month = value.month()
-        let day = value.day()
-        setMHolder(month)
-        setYHolder(year)
+    const getCurrentDay = (value)=>{
+        let day = String(value).split(' ')[2]
+        setDHolder(day)
+        setMHolder(value.getMonth() + 1)
+        setYHolder(String(value).split(' ')[3])
+    }
+    useEffect(() => {
+        console.log();
+      dispatch(getMastersShedule({
+        id: searchParams.get('id'),
+        year: moment().year(),
+        monthe: moment().month() + 1
+      }))
+    }, [])
+    
+    
+
+      const changeMonth = (month) => {
+        let year = String(month).split(' ')[3]
+        let current_month = month.getMonth()
+        setMHolder(month.getMonth() + 1)
+        setYHolder(String(month).split(' ')[3])
         dispatch(getMastersShedule({
             id: searchParams.get('id'),
             year: year,
-            monthe: month + 1,
+            monthe: current_month + 1,
         }))
-    }
-    const getCurrentDay = (value)=>{
-        setYHolder(value.year())
-        setMHolder(value.month() + 1)
-        setDHolder(value.date())
-    }
-    
-    const disabledDate = (current) => {
-        // Can not select days before today and toda
-        // console.log(shedulesMaster[1]?.date);
-        // console.log(current.valueOf());
-        //let date = new Date(shedulesMaster[1]?.date)
-        // console.log(date?.getTime());
-        //console.log(current.date());
-        //console.log(shedulesMaster[1]?.date?.split('.')[0]);
-       // let cell = document.getElementsByClassName('ant-picker-cell')
-        // cell.filter((elem)=>{
-        //     if()
-        // })
-        //console.log(cell);
-        //return current <= (moment().startOf('day'));
-
-        // return {
-        //     disabledDate: () => shedulesMaster[1]?.date
-        // }
-
-        let date = shedulesMaster[1]?.date
-        date = date?.split('.')[0]
-        console.log(date);
-        if(!current){
-			return false
-		}else{
-		// больше текущей даты не могу выбрать время> момент ()
-		 // Менее текущей даты нельзя выбрать время <moment (). Subtract (1, "days")
-		 //Выбираем только первые 7 после 7 time <moment (). Subtract (7, "days") || time> moment (). Add (7, 'd')
-			return current <= (moment().startOf('day')) || current < moment().subtract(7, "days") || current !== moment().add(2, 'd')
-		}
-
-
-
-        //ant-picker-cell 
-        //ant-picker-cell-disabled
       };
 
+        function filterWeekends(date) {
+        //const currentShedules = await shedulesMaster.map((elem)=> date.getTime() === new Date(`${elem.date.split('.')[2]}-${elem.date.split('.')[1]}-${elem.date.split('.')[0]}T00:00`).getTime
+        //)
+        const currentShedules = [false, false, false]
+        let string = currentShedules.join(' || ')
+        console.log(string);
+        // Return false if Saturday or Sunday
+        // return date.getTime() === new Date('2022-08-15T00:00').getTime() || date.getTime() === new Date('2022-08-16T00:00').getTime();
+        // !! dont look this strings )))
+        return shedulesMaster[0]?.working === false && date.getTime() === new Date(`${shedulesMaster[0]?.date?.split('.')[2]}-${shedulesMaster[0]?.date?.split('.')[1]}-${shedulesMaster[0]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[1]?.working === false && date.getTime() === new Date(`${shedulesMaster[1]?.date?.split('.')[2]}-${shedulesMaster[1]?.date?.split('.')[1]}-${shedulesMaster[1]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[2]?.working === false && date.getTime() === new Date(`${shedulesMaster[2]?.date?.split('.')[2]}-${shedulesMaster[2]?.date?.split('.')[1]}-${shedulesMaster[2]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[3]?.working === false && date.getTime() === new Date(`${shedulesMaster[3]?.date?.split('.')[2]}-${shedulesMaster[3]?.date?.split('.')[1]}-${shedulesMaster[3]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[4]?.working === false && date.getTime() === new Date(`${shedulesMaster[4]?.date?.split('.')[2]}-${shedulesMaster[4]?.date?.split('.')[1]}-${shedulesMaster[4]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[5]?.working === false && date.getTime() === new Date(`${shedulesMaster[5]?.date?.split('.')[2]}-${shedulesMaster[5]?.date?.split('.')[1]}-${shedulesMaster[5]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[6]?.working === false && date.getTime() === new Date(`${shedulesMaster[6]?.date?.split('.')[2]}-${shedulesMaster[6]?.date?.split('.')[1]}-${shedulesMaster[6]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[7]?.working === false && date.getTime() === new Date(`${shedulesMaster[7]?.date?.split('.')[2]}-${shedulesMaster[7]?.date?.split('.')[1]}-${shedulesMaster[7]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[8]?.working === false && date.getTime() === new Date(`${shedulesMaster[8]?.date?.split('.')[2]}-${shedulesMaster[8]?.date?.split('.')[1]}-${shedulesMaster[8]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[9]?.working === false && date.getTime() === new Date(`${shedulesMaster[9]?.date?.split('.')[2]}-${shedulesMaster[9]?.date?.split('.')[1]}-${shedulesMaster[9]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[10]?.working === false && date.getTime() === new Date(`${shedulesMaster[10]?.date?.split('.')[2]}-${shedulesMaster[10]?.date?.split('.')[1]}-${shedulesMaster[10]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[11]?.working === false && date.getTime() === new Date(`${shedulesMaster[11]?.date?.split('.')[2]}-${shedulesMaster[11]?.date?.split('.')[1]}-${shedulesMaster[11]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[12]?.working === false && date.getTime() === new Date(`${shedulesMaster[12]?.date?.split('.')[2]}-${shedulesMaster[12]?.date?.split('.')[1]}-${shedulesMaster[12]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[13]?.working === false && date.getTime() === new Date(`${shedulesMaster[13]?.date?.split('.')[2]}-${shedulesMaster[13]?.date?.split('.')[1]}-${shedulesMaster[13]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[14]?.working === false && date.getTime() === new Date(`${shedulesMaster[14]?.date?.split('.')[2]}-${shedulesMaster[14]?.date?.split('.')[1]}-${shedulesMaster[14]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[15]?.working === false && date.getTime() === new Date(`${shedulesMaster[15]?.date?.split('.')[2]}-${shedulesMaster[15]?.date?.split('.')[1]}-${shedulesMaster[15]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[16]?.working === false && date.getTime() === new Date(`${shedulesMaster[16]?.date?.split('.')[2]}-${shedulesMaster[16]?.date?.split('.')[1]}-${shedulesMaster[16]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[17]?.working === false && date.getTime() === new Date(`${shedulesMaster[17]?.date?.split('.')[2]}-${shedulesMaster[17]?.date?.split('.')[1]}-${shedulesMaster[17]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[18]?.working === false && date.getTime() === new Date(`${shedulesMaster[18]?.date?.split('.')[2]}-${shedulesMaster[18]?.date?.split('.')[1]}-${shedulesMaster[18]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[19]?.working === false && date.getTime() === new Date(`${shedulesMaster[19]?.date?.split('.')[2]}-${shedulesMaster[19]?.date?.split('.')[1]}-${shedulesMaster[19]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[20]?.working === false && date.getTime() === new Date(`${shedulesMaster[20]?.date?.split('.')[2]}-${shedulesMaster[20]?.date?.split('.')[1]}-${shedulesMaster[20]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[21]?.working === false && date.getTime() === new Date(`${shedulesMaster[21]?.date?.split('.')[2]}-${shedulesMaster[21]?.date?.split('.')[1]}-${shedulesMaster[21]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[22]?.working === false && date.getTime() === new Date(`${shedulesMaster[22]?.date?.split('.')[2]}-${shedulesMaster[22]?.date?.split('.')[1]}-${shedulesMaster[22]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[23]?.working === false && date.getTime() === new Date(`${shedulesMaster[23]?.date?.split('.')[2]}-${shedulesMaster[23]?.date?.split('.')[1]}-${shedulesMaster[23]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[24]?.working === false && date.getTime() === new Date(`${shedulesMaster[24]?.date?.split('.')[2]}-${shedulesMaster[24]?.date?.split('.')[1]}-${shedulesMaster[24]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[25]?.working === false && date.getTime() === new Date(`${shedulesMaster[25]?.date?.split('.')[2]}-${shedulesMaster[25]?.date?.split('.')[1]}-${shedulesMaster[25]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[26]?.working === false && date.getTime() === new Date(`${shedulesMaster[26]?.date?.split('.')[2]}-${shedulesMaster[26]?.date?.split('.')[1]}-${shedulesMaster[26]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[27]?.working === false && date.getTime() === new Date(`${shedulesMaster[27]?.date?.split('.')[2]}-${shedulesMaster[27]?.date?.split('.')[1]}-${shedulesMaster[27]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[28]?.working === false && date.getTime() === new Date(`${shedulesMaster[28]?.date?.split('.')[2]}-${shedulesMaster[28]?.date?.split('.')[1]}-${shedulesMaster[28]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[29]?.working === false && date.getTime() === new Date(`${shedulesMaster[29]?.date?.split('.')[2]}-${shedulesMaster[29]?.date?.split('.')[1]}-${shedulesMaster[29]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[30]?.working === false && date.getTime() === new Date(`${shedulesMaster[30]?.date?.split('.')[2]}-${shedulesMaster[30]?.date?.split('.')[1]}-${shedulesMaster[30]?.date?.split('.')[0]}T00:00`).getTime()
+        || shedulesMaster[31]?.working === false && date.getTime() === new Date(`${shedulesMaster[31]?.date?.split('.')[2]}-${shedulesMaster[31]?.date?.split('.')[1]}-${shedulesMaster[31]?.date?.split('.')[0]}T00:00`).getTime()
+    }
+      // !! dont look on top strings )))
     return (
         <Spin className="spinner_loading"  size="large" spinning={isLoading || sendData}>
     <Content className={isLoading ? 'main-container loading' : 'main-container'}>
@@ -453,11 +476,23 @@ function Main() {
                     </>
             } */}
             {selectedService && 
-             <ConfigProvider locale={ru_RU}>
-                <DatePicker onPanelChange={(value)=> getFreeDay(value)}
-                onChange={(date, dateString)=> getCurrentDay(date)} disabledDate={disabledDate}
-                className={'date_picker'}/>
-             </ConfigProvider>
+               <MuiPickersUtilsProvider utils={DateFnsUtils}>
+
+               <KeyboardDatePicker
+                 onMonthChange={(month)=> changeMonth(month)}
+                 format="dd/MM/yyyy"
+                 label="Выберите удобную дату"
+                 value={selectedDate}
+                 onChange={getCurrentDay}
+                 shouldDisableDate={filterWeekends}
+               />
+               
+             </MuiPickersUtilsProvider>
+            //  <ConfigProvider locale={ru_RU}>
+            //     <DatePicker onPanelChange={(value)=> getFreeDay(value)}
+            //     onChange={(date, dateString)=> getCurrentDay(date)} disabledDate={disabledDate}
+            //     className={'date_picker'}/>
+            //  </ConfigProvider>
             }
             </div>
         {notWorking &&

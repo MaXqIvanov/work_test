@@ -320,3 +320,7 @@ option {
 .MuiInput-underline.Mui-error:after{
     border-bottom-color: black !important;
 }
+.ant-card-cover{
+    height: 100%;
+    min-height: 240px;
+}

@@ -10,7 +10,6 @@ import {
     Card,
     Comment,
     Spin,
-   // DatePicker,
     Form,
     Input,
     Rate,
@@ -30,8 +29,6 @@ import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import {getMastersShedule} from '../store/mainSlice';
 import image from '../media/image_not_found.svg'
-import { ConfigProvider } from 'antd';
-import ru_RU from "antd/lib/locale/ru_RU";
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
 import {

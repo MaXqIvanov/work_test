@@ -132,7 +132,7 @@ function Main() {
            setIsLoading(false)
        })
        .catch((e)=>{
-           if (e.response.status === 500 || e.response.status === 403){
+           if (e.response.status === 500 || e.response.status === 403 || e.response.status === 404){
                setErrorModal(true)
            }
         })

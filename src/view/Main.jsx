@@ -31,6 +31,7 @@ import {getMastersShedule} from '../store/mainSlice';
 import image from '../media/image_not_found.svg'
 import 'date-fns';
 import DateFnsUtils from '@date-io/date-fns';
+import deLocale from "date-fns/locale/ru";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
@@ -475,7 +476,7 @@ function Main() {
                     </>
             } */}
             {selectedService && 
-               <MuiPickersUtilsProvider utils={DateFnsUtils}>
+               <MuiPickersUtilsProvider utils={DateFnsUtils} locale={deLocale}>
 
                <KeyboardDatePicker
                  onMonthChange={(month)=> changeMonth(month)}

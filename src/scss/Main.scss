@@ -331,12 +331,14 @@ option {
 .App{
     width: 100%;
     max-width: 100%;
+    min-width: 250px;
 }
 .landing{
     width: 100%;
     min-height: 100vh;
-    background: rgba($color: #6F73D4, $alpha: 0.9);
+    background: rgba($color: #6F73D4, $alpha: 1);
     background-image: url('../media/Group\ 22.svg');
+    background-size: 330px;
     background-position: center;
 }
 .header{
@@ -351,7 +353,7 @@ option {
     justify-content: center;
 }
 .section_main{
-    width: 50%;
+    width: 80%;
     height: 100%;
     min-height: 100vh;
     min-width: 650px;
@@ -434,28 +436,17 @@ option {
 }
 .section_about_user{
     margin-top: 10px;
+    display: grid;
+    width: 90%;
+    margin: auto;
+    grid-template-columns: 48% 48%;
+    column-gap: 4%;
 }
 .about_user_title{
     font-size: x-large;
     font-family: 'Montserrat', sans-serif;
     font-weight: 700;
-    text-align: center;
-}
-.about_user_group{
-    width: 100%;
-    margin-top: 15px;
-    height: fit-content;
-    display: flex;
-    justify-content: center;
-
-}
-.about_user_photo{
-    background-repeat: no-repeat;
-    background-size: cover;
-    min-height: 300px;
-    @media(max-width: 630px){
-        display: none;
-    }
+    text-align: left;
 }
 .about_user_text{
     font-family: 'Montserrat', sans-serif;
@@ -466,20 +457,140 @@ option {
     color: #000000;
     overflow-y: scroll;
 }
-.about_user_group_wrapper{
-    width: 94%;
-    display: grid;
-    grid-template-columns: 48% 48%;
-    column-gap: 4%;
-
-    @media(max-width: 630px){
-        grid-template-columns: 100%;
-    }
-}
 .section_services{
     height: fit-content;
     width: 100%;
     margin-top: 40px;
     min-height: 40vh;
-    border: 1px solid black;
+}
+.ant-spin-lg{
+    z-index: 999 !important;
+}
+.services_title{
+    font-size: x-large;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    text-align: center;
+}
+.services_block{
+    height: fit-content;
+    min-height: 200px;
+    max-height: 500px;
+    overflow-y: scroll;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 20px;
+}
+.service{
+    position: relative;
+    margin-top: 22px;
+    margin-bottom: 1px;
+    width: 96%;
+    min-height: 165px;
+    height: fit-content;
+    background: #FFFFFF;
+    box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 50px;
+}
+.service_img{
+    position: absolute;
+    top: -16px;
+    left: 0px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%;
+    height: 100px;
+    width: 100px;
+    overflow: hidden;
+}
+.service_img_wrapper{
+    position: absolute;
+    top: 2px;
+    left: -1px;
+    height: 102px;
+    width: 104px;
+    border-radius: 50%;
+    box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.25);
+}
+.service_img_block_info{
+    border-top-right-radius: 50px;
+    border-bottom-right-radius: 50px;
+    width: 80%;
+    height: 100%;
+    min-height: 165px;
+    float: right;
+    @media(max-width: 630px){
+        width: 70%;
+    }
+    @media(max-width: 500px){
+        width: 66%;
+    }   
+}
+.about_user_left{
+    display: flex;
+    flex-direction: column;
+}
+.reviews_title{
+    font-size: x-large;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    text-align: left;
+}
+.landing_is_not_active{
+    position: fixed;
+    width: 50%;
+    height: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 50px;
+}
+.section_not_active{
+    width: 80%;
+    height: 100%;
+    min-height: fit-content;
+    min-width: 650px;
+    margin-top: -30px;
+    margin-bottom: 50px;
+    background: white;
+    border-radius: 25px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    max-width: 650px;
+    @media(max-width: 730px){
+        width: 96%;
+        min-width: auto;
+    }
+}
+.user_not_active{
+    position: absolute;
+    width: fit-content;
+    bottom: 50px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    padding: 20px;
+}
+.landing_not_active{
+    width: 100%;
+    min-height: 100vh;
+    background: rgba($color: #6F73D4, $alpha: 1);
+    background-image: url('../media/Group\ 22.svg');
+    background-size: 330px;
+    background-position: center;
+    position: relative;
+}
+.section_not_active_wrapper{
+    height: fit-content;
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    justify-content: center;
 }

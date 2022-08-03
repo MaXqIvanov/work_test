@@ -106,6 +106,7 @@ function Main() {
         setIsLoading(true)
         await api(`portfolio/user_landing/master/?mst=${searchParams.get('id')}`)
        .then((response)=>{
+            console.log(response);
            setUserData(response.data[0])
            setIsLoading(false)
        })
@@ -158,9 +159,9 @@ function Main() {
                     setSelectedDate(null)
                     setNotWorking(true)
                 }
-                if (err.response.status === 500){
-                    setNotSetService(true)
-                }
+                // if (err.response.status === 500){
+                //     setNotSetService(true)
+                // }
                 else {
                     setNotSetService(false)
                 }
@@ -245,12 +246,13 @@ function Main() {
     }, [selectedTime])    
 
     const getCurrentDay = (value)=>{
-        console.log(value);
-        let day = String(value).split(' ')[2]
-        setDHolder(day)
-        setMHolder(value.getMonth() + 1)
-        setYHolder(String(value)?.split(' ')[3])
-       setSelectedDate(mHolder + '.' + dHolder + '.' + yHolder)
+        if(value !== null) {
+            let day = String(value).split(' ')[2]
+            setDHolder(day)
+            setMHolder(value.getMonth() + 1)
+            setYHolder(String(value)?.split(' ')[3])
+            setSelectedDate(mHolder + '.' + dHolder + '.' + yHolder)
+        }
     }
     useEffect(() => {
         console.log();
@@ -321,45 +323,193 @@ function Main() {
       // !! dont look on top strings )))
     //   this is for test
       useEffect(() => {
+        console.log(servicesData);
         console.log(userData);
-      }, [userData])
+      }, [servicesData])
     //   this is end for test
     return (
         <Spin className="spinner_loading"  size="large" spinning={isLoading || sendData}>
-            <div className="landing">
+            {userData.landing_is_active ? 
+             <div className="landing">
                 <div className="landing_wrapper">
                     <div className="header"></div>
                     <div className="section">
                         <div className="section_main">
                             <div className="section_user">
                                 <div style={{backgroundImage: `url(${userData.avatar})`}} className="user_img"></div>
-                                <div className="user_name">{userData.first_name + " " + userData.last_name }</div>
+                                <div className="user_name">{userData.first_name !== '' ? userData.first_name + " " + userData.last_name : "" }</div>
                                 <Tooltip placement="right" title={userData.rating} className="user_raiting">
                                     <div style={{display: 'flex'}}>
                                         <Rate style={{color: '#F6BB62'}} disabled value={userData.rating} allowHalf/>
                                         <div className="user_raiting_number">{userData.rating + '.0'}</div>
                                     </div>
                                 </Tooltip>
-                                <div className="btn_create_order">
+                                <div onClick={() => {
+                                setFeedbackV(true)
+                                }} className="btn_create_order">
                                     <span>Записаться</span>
                                 </div>
                             </div>
                             <div className="section_about_user">
-                                <div className="about_user_title">Обо мне</div>
-                                <div className="about_user_group">
-                                    <div className="about_user_group_wrapper">
-                                        <div style={{backgroundImage: `url(${userData.avatar})`}} className="about_user_photo"></div>
-                                        <div className="about_user_text">{userData.about ? userData.about : 'Описание отсутствует'}</div>
+                                <div class="about_user_left">
+                                    <div className="about_user_title">Обо мне</div>
+                                    <div className="about_user_text">{userData.about ? userData.about : 'Описание отсутствует'}</div>
+                                </div>
+                                <div className="about_user_right">
+                                    <div className="reviews_title">Отзывы</div>
+                                    <div className="reviews_main">
+
                                     </div>
                                 </div>
                             </div>
                             <div className="section_services">
                                 <div className="services_title">Услуги</div>
+                                <div className="services_block">
+                                    {servicesData.map((elem)=> <div className="service">
+                                        <div style={{backgroundImage: `url(${elem.img})`}} className="service_img"><div className="service_img_wrapper"></div></div>
+                                        <div className="service_img_block_info">
+                                            <div className="service_info_title">{elem.name}</div>
+                                        </div>
+                                    </div>)}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <Modal className={'modal-record'} footer={null} onCancel={() => {
+                    setFeedbackV(false)
+                    }} title="Запись" visible={feedbackV}>
+                    <Form onFinish={sendRecord} className={'service-form'}>
+                    <Input value={nameHolder} htmlType={'text'} onChange={((e) => {
+                    setNameHolder(e.target.value)
+                    })} required className={'form-input'} placeholder="Имя"/>
+                    <Input id={'phone-input'} value={phoneHolder} onChange={((e) => {
+                    setPhoneHolder(e.target.value)
+                    })} required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}/>
+                    <select value={selectedService} required onChange={(e) => {
+                    setTimeData('')
+                    setSelectedService(e.target.value)
+                    }}
+                    className={'ant-input form-input email-select current'}>
+                    <option selected disabled className={'pre-selected'} value={""}>Услуга</option>
+                    {servicesData.map(item => (
+                    <option key={item.id} value={item.id}>{item.name + ' - ' + item.duration}</option>
+                    ))}
+                    </select>
+                    <div className={'dates-block'}>
+                    {selectedService && 
+                    <MuiPickersUtilsProvider utils={DateFnsUtils} locale={deLocale}>
+
+                    <KeyboardDatePicker
+                        onMonthChange={(month)=> changeMonth(month)}
+                        format="dd/MM/yyyy"
+                        label="Выберите удобную дату"
+                        value={selectedDate}
+                        onChange={getCurrentDay}
+                        shouldDisableDate={filterWeekends}
+                        onClose={()=>closeDatePicker()}
+                    />
+                    
+                    </MuiPickersUtilsProvider>
+                    }
+                    </div>
+                    {notWorking &&
+                    <Alert className={'form-input'} message="Мастер не работает в этот день" type="error"/>
+                    }
+                    {notSetService ? selectedService !== '' && 
+                    <Alert className={'form-input'} type="error" message="Пожалуйста, выберите услугу" />
+                    : <></>
+                    }
+                    {loadDate == null ? timeData.length > 0 &&
+                    <div className={'time-block'}>
+                    {timeData.map(item => (
+                    <div onClick={() => {
+                    setSelectedTime(item)
+                    }} className={'time-item' + (selectedTime === item ? ' time-item__selected' : '')}
+                    key={item} value={item}>{item}</div>
+                    ))}
+                    </div>
+                    :  <Spin  size="large" spinning={loadDate}></Spin>
+                    }
+                    <TextArea onChange={((e) => {
+                    setCommentHolder(e.target.value)
+                    })} placeholder="Комментарий" className={'form-input'} allowClear/>
+                    <div><Switch required checked={recordCheck} onChange={(e) => {
+                    setRecordCheck(e)
+                    }} className={'form-switch'}/> Согласен(-а) на обработку данных *
+                    </div>
+                    <div className="form-buttons">
+                    <Button className={"submit-button"} onClick={() => {
+                    setFeedbackV(false)
+                    }}>Отмена</Button>
+                    <Button
+                    disabled={recordCheck === false || notWorking === true || nameHolder === '' || phoneHolder === '' || selectedService === null || selectedDate === null || selectedTime === null}
+                    htmlType="submit">Создать</Button>
+
+                    </div>
+                    </Form>
+                </Modal>
             </div>
+            
+            :  <div className="landing_not_active">
+                    <div className="landing_wrapper">
+                        <div className="header"></div>
+                        <div className="section_not_active_wrapper">
+                            <div className="section_not_active">
+                                <div className="section_user">
+                                    <div style={{backgroundImage: `url(${userData.avatar})`}} className="user_img"></div>
+                                    <div className="user_name">{userData.length > 0 ? userData.first_name + " " + userData.last_name : "" }</div>
+                                    <Tooltip placement="right" title={userData.rating} className="user_raiting">
+                                        <div style={{display: 'flex'}}>
+                                            {userData.length > 0 && <><Rate style={{color: '#F6BB62'}} disabled value={userData.rating} allowHalf/>
+                                            <div className="user_raiting_number">{userData.rating + '.0'}</div></>
+                                            }   
+                                        </div>
+                                    </Tooltip>
+                                    {userData.length > 0 && <div className="user_not_active">Пользователь отключил возможность оставлять заявку</div> }
+                                </div>
+                            </div>
+                        </div>        
+                    </div>    
+                </div>        }
+           
+            <Modal style={{zIndex: '99999'}} closable={false} footer={null} visible={errorModal}>
+                <Error></Error>
+            </Modal>
+            <Modal footer={null} onCancel={() => {
+                setSuccessFeedModalV(false)
+                }} title="Успех" visible={successFeedModalV}>
+                <Result
+                status="success"
+                title="Отзыв"
+                subTitle="Ваш отзыв добавлен, спасибо!"
+                extra={[
+                <Button onClick={() => {
+                setSuccessFeedModalV(false)
+                }} type="primary" key="console">
+                Закрыть
+                </Button>,
+
+                ]}
+                />
+            </Modal>
+            <Modal footer={null} onCancel={() => {
+                setSuccessModalV(false)
+                }} title="Успех" visible={successModalV}>
+                <Result
+                status="success"
+                title="Запись"
+                subTitle="Ваша запись успешно сформирована!"
+                extra={[
+                <Button onClick={() => {
+                setSuccessModalV(false)
+                }} type="primary" key="console">
+                Закрыть
+                </Button>,
+
+                ]}
+                />
+            </Modal>
         </Spin>
 
     );

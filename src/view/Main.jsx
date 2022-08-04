@@ -156,7 +156,7 @@ function Main() {
 
                 if (err.response.status === 400){
                     setTimeData([])
-                    setSelectedDate(null)
+                    //setSelectedDate(null)
                     setNotWorking(true)
                 }
                 // if (err.response.status === 500){
@@ -251,7 +251,7 @@ function Main() {
             setDHolder(day)
             setMHolder(value.getMonth() + 1)
             setYHolder(String(value)?.split(' ')[3])
-            setSelectedDate(mHolder + '.' + dHolder + '.' + yHolder)
+            // setSelectedDate(mHolder + '.' + dHolder + '.' + yHolder)
         }
     }
     useEffect(() => {
@@ -325,7 +325,8 @@ function Main() {
       useEffect(() => {
         console.log(servicesData);
         console.log(userData);
-      }, [servicesData])
+        console.log(feedbackData);
+      }, [servicesData, feedbackData])
     //   this is end for test
     return (
         <Spin className="spinner_loading"  size="large" spinning={isLoading || sendData}>
@@ -356,20 +357,43 @@ function Main() {
                                     <div className="about_user_text">{userData.about ? userData.about : 'Описание отсутствует'}</div>
                                 </div>
                                 <div className="about_user_right">
-                                    <div className="reviews_title">Отзывы</div>
+                                    <div className="reviews_title">Отзывы <span onClick={()=> setModalV(true)} className="rewiews_title_img"></span></div>
                                     <div className="reviews_main">
-
+                                        <div className="reviews_main_wrapper">
+                                            {feedbackData ? feedbackData.map((elem)=> <div className="rewiews_user">
+                                            <Avatar src="https://joeschmoe.io/api/v1/random" className="rewiews_user_img"/>
+                                            <Tooltip placement="left" className="grade_wrapper">
+                                                <Rate style={{color: '#F6BB62'}} className='grade' disabled value={elem.grade} allowHalf></Rate>
+                                                <div className="rewiews_grade_raiting">{elem.grade + '.0'}</div>
+                                            </Tooltip>
+                                            <div className="rewiews_user_client">{elem.client}</div>
+                                            <div className="rewiews_user_comment">{elem.comment}</div>
+                                            <div className="rewiews_user_date">{elem.created}</div>
+                                            </div>)   : "Список отзывов пуст"}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <div className="section_services">
                                 <div className="services_title">Услуги</div>
                                 <div className="services_block">
-                                    {servicesData.map((elem)=> <div className="service">
-                                        <div style={{backgroundImage: `url(${elem.img})`}} className="service_img"><div className="service_img_wrapper"></div></div>
-                                        <div className="service_img_block_info">
-                                            <div className="service_info_title">{elem.name}</div>
+                                    {servicesData.map((elem)=> <div onClick={() => {
+                                    setSelectedService(elem.id)
+                                    setFeedbackV(true)
+                                    }} className="service">
+                                        <div className="service_wrapper">
+                                            <div style={{backgroundImage: `url(${elem.img})`}} className="service_img"></div>
+                                            <div className="service_img_block_info">
+                                                <div className="service_info_title">{elem.name}</div>
+                                                <div className="service_info_text">{elem.description ? elem.description : 'Описание отсутствует'}</div>
+                                                <div className="service_info_group">
+                                                    <div className="service_info_cost">Стоимость: {elem.cost} ₽</div>
+                                                    <div className="service_info_duration">Длительность: {elem.duration}</div>
+                                                </div>
+                                                <div className="service_info_btn">записаться</div>
+                                            </div>
                                         </div>
+                                        <div className="service_img_wrapper"></div>
                                     </div>)}
                                 </div>
                             </div>
@@ -444,6 +468,36 @@ function Main() {
                     }}>Отмена</Button>
                     <Button
                     disabled={recordCheck === false || notWorking === true || nameHolder === '' || phoneHolder === '' || selectedService === null || selectedDate === null || selectedTime === null}
+                    htmlType="submit">Записаться</Button>
+
+                    </div>
+                    </Form>
+                </Modal>
+                <Modal footer={null} onCancel={() => {
+                    setModalV(false)
+                    }} title="Добавить отзыв" visible={modalV}>
+                    <Form onFinish={sendFeedback} className={'service-form'}>
+                    <Input onChange={(e) => {
+                    setNameFeedHolder(e.target.value)
+                    }} htmlType={'text'} required className={'form-input'} placeholder="Имя"/>
+                    <Input  id={'phone-input'} onChange={(e) => {
+                    setPhoneFeedHolder(e.target.value)
+                    }} required placeholder={'Номер телефона'} className={'form-input'} addonBefore={'+7'}/>
+                    <Rate onChange={(e) => {
+                    setGradeFeedHolder(e)
+                    }} required className={'feedback-rating '}/>
+                    <TextArea onChange={(e) => {
+                    setCommentFeedHolder(e.target.value)
+                    }} placeholder="Комментарий" className={'form-input'} allowClear/>
+                    <div><Switch value={checkFeedHolder} onChange={(e) => {
+                    setCheckFeedHolder(e)
+                    }} required defaultChecked className={'form-switch'}/> Согласен(-а) на обработку данных *
+                    </div>
+                    <div className="form-buttons">
+                    <Button id={'cancel-button'} className={"submit-button form-button cancel-button"} onClick={() => {
+                    setModalV(false)
+                    }}>Отмена</Button>
+                    <Button className={"form-button"} disabled={checkFeedHolder === false || gradeFeedHolder === null || phoneFeedHolder === null}
                     htmlType="submit">Создать</Button>
 
                     </div>
@@ -466,7 +520,7 @@ function Main() {
                                             }   
                                         </div>
                                     </Tooltip>
-                                    {userData.length > 0 && <div className="user_not_active">Пользователь отключил возможность оставлять заявку</div> }
+                                    <div className="user_not_active">Пользователь отключил возможность оставлять заявку</div>
                                 </div>
                             </div>
                         </div>        
